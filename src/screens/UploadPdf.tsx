@@ -154,16 +154,16 @@ export const UploadPdfScreen = ({ navigation }: any) => {
                                     disabled={uploading}
                                     style={styles.uploadButton}
                                 >
-                                    {uploading ? 'Unlocking & Processing...' : 'Unlock & Upload'}
+                                    {uploading ? 'Processing...' : 'Process Statement'}
                                 </Button>
                             </View>
                         )}
 
                         {uploadSuccess && (
-                            <Card style={styles.successCard} mode="outlined">
+                            <Card style={[styles.successCard, { backgroundColor: theme.colors.primaryContainer }]} mode="outlined">
                                 <Card.Content>
-                                    <Text variant="bodyLarge" style={styles.successText}>
-                                        ✅ Processed successfully!
+                                    <Text variant="bodyLarge" style={[styles.successText, { color: theme.colors.onPrimaryContainer }]}>
+                                        Statement processed successfully!
                                     </Text>
                                 </Card.Content>
                             </Card>
@@ -231,8 +231,7 @@ const styles = StyleSheet.create({
         borderColor: '#4caf50',
     },
     successText: {
-        color: '#2e7d32',
         textAlign: 'center',
-        fontWeight: '500',
+        fontWeight: 'bold',
     },
 });

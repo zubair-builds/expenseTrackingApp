@@ -12,7 +12,9 @@ The Expense Tracker Mobile App is a client-side interface designed to help users
 
 ## Architecture Overview
 
-This project follows a **Thin Client, Thick Server** architecture:
+This project follows a **Thin Client, Thick Server** architecture.
+
+> **Crucial Architecture Principle:** The React Native app is intentionally a **thin UI layer**. All PDF unlocking, parsing, categorization, and business logic are handled by the backend. **No expense processing logic should live in the mobile app.**
 
 *   **React Native (Expo):** The mobile app acts primarily as a presentation layer. It handles user authentication, file selection (PDFs), and data visualization (charts, lists). It contains minimal business logic.
 *   **Backend (Next.js API):** The backend is responsible for the heavy lifting: PDF file parsing, text extraction, transaction categorization (AI/Heuristic), and data persistence.
@@ -61,21 +63,27 @@ This project follows a **Thin Client, Thick Server** architecture:
 
 ## Non-Goals
 
-*   **No Parsing on Device:** The mobile app typically does NOT parse PDFs locally. All processing is offloaded to the API.
-*   **No Manual Transaction Entry:** The current scope focuses on *statement-based* tracking, not manual line-item entry.
-*   **No Offline Mode:** The app requires an internet connection to function (upload files, fetch history). Offline caching is not currently a priority.
+*   **Not a Budgeting App (Yet):** The current focus is on *expense tracking* from statements, not proactive budgeting or forecasting.
+*   **Not Offline-First:** The app relies on server connectivity to function. Offline caching is not a priority.
+*   **No On-Device Parsing:** **Critical.** The app never parses PDFs locally. All unlocking and extraction happen on the backend.
+*   **No Analytics Engine:** The mobile app only visualizes pre-calculated data. No heavy aggregation or statistical logic resides in React Native.
+*   **No Financial Advice:** This is a technical tool for data visualization, not a financial advisory platform.
+*   **No Manual Entry:** Focus is strictly on automated statement processing.
 
 ---
 
-## UI / UX Principles
+## UI / UX Rules (Strict)
 
-*   **Design System:** Strictly adheres to **Material Design 3 (Material You)**.
-*   **Theming:** Uses `react-native-paper` `MD3LightTheme` (and Dark equivalent).
-*   **Consistency:**
-    *   **NEVER** use hardcoded colors (e.g., `'#FFFFFF'`, `'#000'`). ALWAYS use `theme.colors.*` (e.g., `theme.colors.surface`, `theme.colors.onSurface`).
-    *   **Spacing:** Use standard spacing grid (4, 8, 16, 24).
-*   **Safe Area:** All screens must use `useSafeAreaInsets` from `react-native-safe-area-context` to handle notches and dynamic islands correctly.
-*   **Feedback:** Use **Snackbars** for transient non-critical updates (success/error toasts). Use **Dialogs** for critical confirmations. Avoid native `Alert.alert` unless necessary for system errors.
+1.  **Material Design 3 Compliance:** All UI components **must** adhere to Material Design 3 guidelines. Use `react-native-paper` components (e.g., `Text` with `variant`, `Button` with `mode`).
+2.  **Theme Tokens Only:** **Zero Tolerance for Hardcoded Colors.**
+    *   ❌ Incorrect: `color: '#FFFFFF'`, `backgroundColor: '#f5f5f5'`
+    *   ✅ Correct: `color: theme.colors.onPrimary`, `backgroundColor: theme.colors.background`
+3.  **Dark Mode First:** All generic views must support dark mode by relying solely on theme tokens.
+4.  **Safe Area Enforced:** Every screen must implement `useSafeAreaInsets` to prevent content clipping on notches/dynamic islands. Basic `SafeAreaView` is often insufficient for complex layouts.
+5.  **Feedback Hierarchy:**
+    *   **Snackbar:** For transient status updates (success/error).
+    *   **Dialog/Modal:** For blocking confirmations or inputs.
+    *   **Alert:** Avoid native alerts; they disrupt the specific UI flow.
 
 ---
 
@@ -123,8 +131,10 @@ Create a `.env` file in the root if strictly necessary, but currently, API URLs 
 
 ---
 
-## How to Use This README for Code Reviews
+## How to Use This README
 
-*   **Reviewers:** Check PRs against the **UI / UX Principles** section. If a PR introduces hardcoded colors or ignores Safe Area, request changes pointing to this document.
-*   **Context:** Use the **Architecture Overview** to understand *why* certain logic is absent from the mobile code (e.g., "Where is the PDF parser?" -> "It's in the backend, as per Architecture").
-*   **AI Prompts:** When asking AI assistants (like Cursor/Windsurf) to modify code, reference this README to establish constraints (e.g., "Use Material 3 tokens as defined in the README").
+**This README defines constraints and assumptions that should be respected during refactors, reviews, and AI-assisted development.**
+
+*   **For AI Prompts:** Reference this file to establish context (e.g., *"Refactor [file] following the UI/UX Rules in README.md"*). This prevents the AI from introducing legacy patterns or hardcoded styles.
+*   **For Code Reviews:** Reject PRs that violate the **Architecture Principle** (e.g., adding parsing logic to the client) or **UI Rules** (e.g., hardcoded hex values).
+*   **For New Features:** Consult **Non-Goals** first. If a feature request contradicts a non-goal (e.g., "Add offline caching"), it warrants a design discussion before implementation.

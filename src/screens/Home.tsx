@@ -24,30 +24,35 @@ export const HomeScreen = ({ navigation }: any) => {
             <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
                 <Card.Content>
                     <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
-                        Welcome! 👋
+                        Track Expenses
                     </Text>
-                    <Text variant="bodyLarge" style={[styles.email, { color: theme.colors.primary }]}>
+
+                    <Text variant="labelLarge" style={[styles.email, { color: theme.colors.onSurfaceVariant }]}>
                         {user?.email}
                     </Text>
+
                     <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurfaceVariant }]}>
-                        Upload your credit card statement to track your expenses
+                        Upload your bank statement (PDF) to automatically categorize and track your spending
                     </Text>
 
-                    <Button
-                        onPress={handleUploadPress}
-                        style={styles.uploadButton}
-                    >
-                        Upload Credit Card Statement (PDF)
-                    </Button>
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            mode="contained"
+                            onPress={handleUploadPress}
+                            style={styles.uploadButton}
+                        >
+                            Upload Credit Card Statement (PDF)
+                        </Button>
 
-                    <Button
-                        mode="outlined"
-                        onPress={handleSignOut}
-                        textColor={theme.colors.error}
-                        style={[styles.signOutButton, { borderColor: theme.colors.error }]}
-                    >
-                        Sign Out
-                    </Button>
+                        <Button
+                            mode="outlined"
+                            onPress={handleSignOut}
+                            textColor={theme.colors.error}
+                            style={[styles.signOutButton, { borderColor: theme.colors.error }]}
+                        >
+                            Sign Out
+                        </Button>
+                    </View>
                 </Card.Content>
             </Card>
         </View>
@@ -66,7 +71,6 @@ const styles = StyleSheet.create({
     title: {
         textAlign: 'center',
         marginBottom: 8,
-        fontWeight: 'bold',
     },
     email: {
         textAlign: 'center',
@@ -76,10 +80,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 24,
     },
-    uploadButton: {
+    buttonContainer: {
         marginTop: 8,
     },
+    uploadButton: {
+        marginVertical: 8,
+    },
     signOutButton: {
-        marginTop: 8,
+        marginVertical: 8,
     },
 });

@@ -102,6 +102,7 @@ export const HistoryScreen = () => {
         return (
             <List.Item
                 title={item.originalFilename}
+                titleStyle={{ fontWeight: '500' }}
                 description={() => (
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
                         <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
@@ -142,12 +143,15 @@ export const HistoryScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            <View style={[styles.header, { paddingTop: insets.top }]}>
-                <Text variant="headlineMedium" style={{ fontWeight: 'bold', color: theme.colors.primary }}>
-                    History
+            <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+                <Text variant="headlineMedium" style={{ color: theme.colors.primary, marginBottom: 4 }}>
+                    Statements
                 </Text>
-                <Text variant="bodyMedium" style={{ color: theme.colors.outline }}>
-                    {pdfs.length} documents found
+                <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 2 }}>
+                    Monthly uploaded statements
+                </Text>
+                <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
+                    Tap a statement to view details or reprocess
                 </Text>
             </View>
 
@@ -158,7 +162,7 @@ export const HistoryScreen = () => {
                 loading={loading}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                emptyText="No history found"
+                emptyText="No statements uploaded yet"
                 emptyIcon="file-document-outline"
                 contentContainerStyle={styles.listContent}
             />

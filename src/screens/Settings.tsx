@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import { Text, Button, FAB, Dialog, Portal, TextInput, List, IconButton, useTheme, Snackbar } from 'react-native-paper';
+import { Text, Button, FAB, Dialog, Portal, TextInput, List, IconButton, useTheme, Snackbar, SegmentedButtons } from 'react-native-paper';
 import { ListView } from '../components/ListView';
 import { useAuthStore } from '../store/authStore';
+import { useThemeStore } from '../store/themeStore';
 import { api } from '../services/api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -17,6 +18,7 @@ export const SettingsScreen = () => {
     const theme = useTheme();
     const insets = useSafeAreaInsets();
     const signOut = useAuthStore((state) => state.signOut);
+    const { themeMode, setThemeMode } = useThemeStore();
 
     // State
     const [passwords, setPasswords] = useState<PasswordItem[]>([]);
@@ -108,22 +110,8 @@ export const SettingsScreen = () => {
     const handleViewPassword = async (id: string, label: string) => {
         setFetchingDetails(true);
         try {
-            // Check if getPasswordDetails exists before calling
             if (api.getPasswordDetails) {
                 const data = await api.getPasswordDetails(id);
-                // Assuming the API returns the decrypted password in a field like 'decryptedPassword' 
-                // or implied in the 'password' object.
-                // Adjust based on actual API response structure.
-                // Since getPasswordDetails was added as a guess, let's assume it returns { password: { ... value: '...' } }
-                // Checking route.ts for [id] GET would confirm.
-                // For now, let's assume specific response structure or update logic.
-
-                // Actually, looking at previous steps, I only reviewed DELETE and PATCH in [id]/route.ts.
-                // I did NOT verify GET exists. If GET doesn't exist, I can't implement view.
-                // I will implement "Copy" or "View" as a placeholder or try the endpoint.
-                // Better safely: Just show label and allow delete for now, or assume the user wants management.
-
-                // Let's assume fetching details fetches the object.
                 setSelectedPassword({ label, value: data.password?.decryptedPassword || '********' });
                 setDetailsDialogVisible(true);
             } else {
@@ -162,6 +150,23 @@ export const SettingsScreen = () => {
                 <Text variant="headlineMedium" style={{ fontWeight: 'bold', color: theme.colors.primary }}>
                     Settings
                 </Text>
+            </View>
+
+            <View style={[styles.sectionHeader, { backgroundColor: theme.colors.surfaceVariant }]}>
+                <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>Appearance</Text>
+            </View>
+
+            <View style={styles.appearanceContainer}>
+                <SegmentedButtons
+                    value={themeMode}
+                    onValueChange={val => setThemeMode(val as any)}
+                    buttons={[
+                        { value: 'system', label: 'System' },
+                        { value: 'light', label: 'Light' },
+                        { value: 'dark', label: 'Dark' },
+                    ]}
+                    style={{ margin: 16 }}
+                />
             </View>
 
             <View style={[styles.sectionHeader, { backgroundColor: theme.colors.surfaceVariant }]}>
@@ -261,6 +266,9 @@ const styles = StyleSheet.create({
     sectionHeader: {
         paddingHorizontal: 16,
         paddingVertical: 8,
+    },
+    appearanceContainer: {
+        // No extra styling needed as margin is on SegmentedButtons
     },
     listContent: {
         paddingBottom: 80,

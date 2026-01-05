@@ -111,6 +111,7 @@ export const StatementDetailsScreen = () => {
     const renderItem = ({ item: tx }: { item: Transaction }) => (
         <List.Item
             title={tx.description}
+            titleStyle={{ fontWeight: '500' }}
             description={`${tx.category} • ${tx.date}`}
             left={props => (
                 <List.Icon
@@ -122,7 +123,7 @@ export const StatementDetailsScreen = () => {
             right={props => (
                 <View style={{ justifyContent: 'center', marginRight: 8 }}>
                     <Text
-                        variant="bodyMedium"
+                        variant="titleMedium"
                         style={{
                             fontWeight: 'bold',
                             color: tx.type === 'DEBIT' ? theme.colors.error : theme.colors.primary

@@ -39,11 +39,12 @@ export const AnalyticsScreen = () => {
     };
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'PKR',
+        const formatted = new Intl.NumberFormat('en-PK', { // Using en-PK or en-US with consistent separators
+            style: 'decimal',
+            minimumFractionDigits: 0,
             maximumFractionDigits: 0,
         }).format(amount);
+        return `PKR\u00A0${formatted}`;
     };
 
     if (loading && !refreshing) {
@@ -64,7 +65,13 @@ export const AnalyticsScreen = () => {
         monthlyTrends.forEach((m: any) => {
             const val = Number(m.totalSpending);
             if (!isNaN(val)) {
-                lineChartLabels.push(m.month ? m.month.substring(0, 3) : '');
+                // Try to parse month for better label (unique)
+                let label = m.month ? m.month.substring(0, 3) : '';
+                const date = new Date(m.month);
+                if (!isNaN(date.getTime())) {
+                    label = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+                }
+                lineChartLabels.push(label);
                 lineChartData.push(val);
             }
         });
@@ -93,7 +100,7 @@ export const AnalyticsScreen = () => {
                         '#FF9800', // Orange
                         '#E91E63', // Pink
                     ][index % 5],
-                    legendFontColor: '#7F7F7F',
+                    legendFontColor: theme.colors.onSurface,
                     legendFontSize: 12,
                 };
             })
@@ -106,14 +113,14 @@ export const AnalyticsScreen = () => {
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16 }]}
         >
-            <Text variant="headlineMedium" style={[styles.headerTitle, { color: theme.colors.primary }]}>Overview</Text>
+            <Text variant="titleLarge" style={[styles.headerTitle, { color: theme.colors.primary }]}>Overview</Text>
 
             {/* Summary Cards Row 1 */}
             <View style={styles.row}>
                 <Card style={[styles.card, styles.halfCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="labelMedium" style={{ color: theme.colors.primary }}>Total Spent</Text>
-                        <Text variant="titleLarge" style={styles.amountText}>
+                        <Text variant="titleLarge" style={styles.amountText} numberOfLines={1} adjustsFontSizeToFit>
                             {summary ? formatCurrency(summary.totalSpending) : '...'}
                         </Text>
                     </Card.Content>
@@ -122,8 +129,11 @@ export const AnalyticsScreen = () => {
                 <Card style={[styles.card, styles.halfCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="labelMedium" style={{ color: theme.colors.tertiary }}>Avg/Month</Text>
-                        <Text variant="titleLarge" style={styles.amountText}>
+                        <Text variant="titleLarge" style={styles.amountText} numberOfLines={1} adjustsFontSizeToFit>
                             {summary ? formatCurrency(summary.averageMonthlySpending) : '...'}
+                        </Text>
+                        <Text variant="bodySmall" style={{ color: theme.colors.outline, marginTop: 4 }}>
+                            Based on uploaded statements
                         </Text>
                     </Card.Content>
                 </Card>
@@ -134,7 +144,7 @@ export const AnalyticsScreen = () => {
                 <Card style={[styles.card, styles.halfCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="labelMedium">Transactions</Text>
-                        <Text variant="titleLarge" style={styles.amountText}>
+                        <Text variant="titleMedium" style={styles.amountText} numberOfLines={1} adjustsFontSizeToFit>
                             {summary?.totalTransactions || 0}
                         </Text>
                     </Card.Content>
@@ -142,7 +152,17 @@ export const AnalyticsScreen = () => {
                 <Card style={[styles.card, styles.halfCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="labelMedium">Top Category</Text>
-                        <Text variant="titleMedium" numberOfLines={1} style={styles.amountText}>
+                        <Text
+                            variant="titleMedium"
+                            numberOfLines={1}
+                            style={[
+                                styles.amountText,
+                                summary?.mostUsedCategory === 'Other' && {
+                                    color: theme.colors.onSurfaceVariant,
+                                    fontWeight: 'normal',
+                                }
+                            ]}
+                        >
                             {summary?.mostUsedCategory || '-'}
                         </Text>
                     </Card.Content>
@@ -154,12 +174,13 @@ export const AnalyticsScreen = () => {
 
             <SegmentedButtons
                 value={chartView}
+                density="medium"
                 onValueChange={setChartView}
                 buttons={[
                     { value: 'spending', label: 'Trends' },
                     { value: 'categories', label: 'Categories' },
                 ]}
-                style={styles.segmentButton}
+                style={[styles.segmentButton, { maxWidth: 300, alignSelf: 'center' }]}
             />
 
             {chartView === 'spending' && lineChartData.length > 0 ? (
@@ -181,16 +202,15 @@ export const AnalyticsScreen = () => {
                                 backgroundGradientFrom: theme.colors.surface,
                                 backgroundGradientTo: theme.colors.surface,
                                 decimalPlaces: 0,
-                                color: (opacity = 1) => `rgba(0, 71, 171, ${opacity})`,
-                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                color: (opacity = 1) => theme.colors.primary,
+                                labelColor: (opacity = 1) => theme.colors.onSurface,
                                 style: { borderRadius: 16 },
                                 propsForDots: {
-                                    r: "6",
+                                    r: "4",
                                     strokeWidth: "2",
-                                    stroke: "#ffa726"
+                                    stroke: theme.colors.primary
                                 },
-                                // Custom formatter to divide by 1000 for 'k' suffix if needed, 
-                                // essentially scaling the display
+                                // Compact formatting: 12500 -> 13k
                                 formatYLabel: (yValue) => (parseInt(yValue) / 1000).toFixed(0),
                             }}
                             bezier
@@ -207,7 +227,7 @@ export const AnalyticsScreen = () => {
                             width={screenWidth - 64}
                             height={220}
                             chartConfig={{
-                                color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+                                color: (opacity = 1) => theme.colors.secondary,
                             }}
                             accessor={"population"}
                             backgroundColor={"transparent"}
@@ -243,7 +263,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontWeight: 'bold',
         marginBottom: 16,
-        color: '#0047AB',
     },
     sectionTitle: {
         fontWeight: 'bold',
@@ -256,7 +275,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     card: {
-        elevation: 2,
+        elevation: 1,
     },
     halfCard: {
         width: '48%',
@@ -269,7 +288,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     chartCard: {
-        elevation: 2,
+        elevation: 1,
         alignItems: 'center',
     },
     chartTitle: {
