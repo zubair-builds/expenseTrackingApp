@@ -3,8 +3,14 @@ import { View, StyleSheet } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
 
-export const HomeScreen = ({ navigation }: any) => {
+type HomeScreenProps = {
+    navigation: NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
+};
+
+export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const user = useAuthStore((state) => state.user);
     const signOut = useAuthStore((state) => state.signOut);
 

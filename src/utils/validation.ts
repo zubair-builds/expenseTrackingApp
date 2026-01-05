@@ -2,10 +2,7 @@
  * Validation utilities for user inputs
  */
 
-/**
- * Email validation regex pattern
- */
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { MIN_PASSWORD_LENGTH, EMAIL_REGEX } from '../constants';
 
 /**
  * Validate email format
@@ -25,8 +22,8 @@ export const validatePassword = (password: string): { isValid: boolean; error?: 
     if (!password) {
         return { isValid: false, error: 'Password is required' };
     }
-    if (password.length < 6) {
-        return { isValid: false, error: 'Password must be at least 6 characters' };
+    if (password.length < MIN_PASSWORD_LENGTH) {
+        return { isValid: false, error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` };
     }
     return { isValid: true };
 };

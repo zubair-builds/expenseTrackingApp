@@ -2,13 +2,15 @@
  * Utility functions for formatting data
  */
 
+import { DEFAULT_CURRENCY } from '../constants';
+
 /**
  * Format a number as currency
  * @param amount - Amount to format
- * @param currency - Currency code (default: PKR)
+ * @param currency - Currency code (default: from constants)
  * @returns Formatted currency string
  */
-export const formatCurrency = (amount: number, currency: string = 'PKR'): string => {
+export const formatCurrency = (amount: number, currency: string = DEFAULT_CURRENCY): string => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency,

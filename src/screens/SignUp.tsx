@@ -5,8 +5,14 @@ import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { validateEmail, validatePassword } from '../utils/validation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '../types/navigation';
 
-export const SignUpScreen = ({ navigation }: any) => {
+type SignUpScreenProps = {
+    navigation: NativeStackNavigationProp<AuthStackParamList, 'SignUp'>;
+};
+
+export const SignUpScreen = ({ navigation }: SignUpScreenProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');

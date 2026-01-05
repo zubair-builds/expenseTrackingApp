@@ -6,12 +6,17 @@ import { Button } from '../components/Button';
 import { api } from '../services/api';
 import { formatFileSize } from '../utils/formatters';
 import { isPdfFile, isValidFileSize } from '../utils/validation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
+import { MAX_FILE_SIZE_MB } from '../constants';
 
 import { TextInput } from 'react-native-paper';
 
-const MAX_FILE_SIZE_MB = 10;
+type UploadPdfScreenProps = {
+    navigation: NativeStackNavigationProp<RootStackParamList, 'UploadPdf'>;
+};
 
-export const UploadPdfScreen = ({ navigation }: any) => {
+export const UploadPdfScreen = ({ navigation }: UploadPdfScreenProps) => {
     const [selectedFile, setSelectedFile] = useState<{
         name: string;
         size: number;

@@ -1,8 +1,9 @@
 // Replace with your machine's IP if testing on device (e.g., 'http://192.168.1.5:3000')
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL as BASE_API_URL, TOKEN_STORAGE_KEY } from '../constants';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
-const TOKEN_KEY = '@auth_token';
+const API_URL = BASE_API_URL;
+const TOKEN_KEY = TOKEN_STORAGE_KEY;
 
 export interface PdfItem {
     id: string;
