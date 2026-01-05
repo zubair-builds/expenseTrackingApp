@@ -123,8 +123,6 @@ export const api = {
      * Sign in API call
      */
     signIn: async (email: string, password: string) => {
-        console.log('📡 API: Sign In Request', { email });
-
         try {
             const response = await fetch(`${API_URL}/api/auth/signin`, {
                 method: 'POST',
@@ -143,14 +141,13 @@ export const api = {
                 throw new Error(data.error || 'Login failed');
             }
 
-            console.log('✅ API: Sign In Response - Success');
             return {
                 success: true,
                 token: data.token,
                 user: data.user
             };
         } catch (error: any) {
-            console.error('❌ API: Sign In Error', error);
+            console.error('Sign in error occurred');
             throw error;
         }
     },
@@ -159,8 +156,6 @@ export const api = {
      * Sign up API call
      */
     signUp: async (email: string, password: string) => {
-        console.log('📡 API: Sign Up Request', { email });
-
         try {
             const response = await fetch(`${API_URL}/api/auth/signup`, {
                 method: 'POST',
@@ -168,7 +163,6 @@ export const api = {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    // TODO: Add name field to UI if needed, currently using email prefix
                     name: email.split('@')[0],
                     email,
                     password,
@@ -181,7 +175,6 @@ export const api = {
                 throw new Error(data.error || 'Signup failed');
             }
 
-            console.log('✅ API: Sign Up Response - Success');
             return {
                 success: true,
                 token: data.token,
@@ -189,7 +182,7 @@ export const api = {
             };
 
         } catch (error: any) {
-            // console.error('❌ API: Sign Up Error', error);
+            console.error('Sign up error occurred');
             throw error;
         }
     },

@@ -64,7 +64,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     signOut: async () => {
-        console.log('👋 Sign Out');
         // Remove token from AsyncStorage
         await AsyncStorage.removeItem(TOKEN_KEY);
 

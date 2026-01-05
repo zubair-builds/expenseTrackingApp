@@ -4,6 +4,7 @@ import { Text, Card, Snackbar } from 'react-native-paper';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { validateEmail, validatePassword } from '../utils/validation';
 
 export const SignUpScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
@@ -23,21 +24,16 @@ export const SignUpScreen = ({ navigation }: any) => {
         let isValid = true;
 
         // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email) {
-            newErrors.email = 'Email is required';
-            isValid = false;
-        } else if (!emailRegex.test(email)) {
-            newErrors.email = 'Invalid email format';
+        const emailValidation = validateEmail(email);
+        if (!emailValidation.isValid) {
+            newErrors.email = emailValidation.error || '';
             isValid = false;
         }
 
         // Password validation
-        if (!password) {
-            newErrors.password = 'Password is required';
-            isValid = false;
-        } else if (password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.isValid) {
+            newErrors.password = passwordValidation.error || '';
             isValid = false;
         }
 
@@ -65,7 +61,6 @@ export const SignUpScreen = ({ navigation }: any) => {
             setSnackbarVisible(true);
             // Navigation will happen automatically via RootNavigator when auth state changes
         } catch (error: any) {
-            console.log('Sign up error:', error);
             setSnackbarMessage(error.message || 'Sign up failed. Please try again.');
             setSnackbarType('error');
             setSnackbarVisible(true);

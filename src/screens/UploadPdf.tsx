@@ -4,8 +4,12 @@ import { Text, Card } from 'react-native-paper';
 import * as DocumentPicker from 'expo-document-picker';
 import { Button } from '../components/Button';
 import { api } from '../services/api';
+import { formatFileSize } from '../utils/formatters';
+import { isPdfFile, isValidFileSize } from '../utils/validation';
 
 import { TextInput } from 'react-native-paper';
+
+const MAX_FILE_SIZE_MB = 10;
 
 export const UploadPdfScreen = ({ navigation }: any) => {
     const [selectedFile, setSelectedFile] = useState<{
@@ -27,6 +31,19 @@ export const UploadPdfScreen = ({ navigation }: any) => {
 
             if (!result.canceled && result.assets && result.assets.length > 0) {
                 const file = result.assets[0];
+                
+                // Validate file type
+                if (!isPdfFile(file.mimeType || '')) {
+                    Alert.alert('Invalid File', 'Please select a PDF file');
+                    return;
+                }
+                
+                // Validate file size
+                if (!isValidFileSize(file.size || 0, MAX_FILE_SIZE_MB)) {
+                    Alert.alert('File Too Large', `Please select a file smaller than ${MAX_FILE_SIZE_MB}MB`);
+                    return;
+                }
+                
                 setSelectedFile({
                     name: file.name,
                     size: file.size || 0,
@@ -35,13 +52,9 @@ export const UploadPdfScreen = ({ navigation }: any) => {
                 });
                 setUploadSuccess(false);
                 setPassword(''); // Reset password on new file selection
-                console.log('📄 PDF Selected:', {
-                    name: file.name,
-                    size: `${((file.size || 0) / 1024).toFixed(2)} KB`,
-                });
             }
         } catch (error) {
-            console.error('Error selecting PDF:', error);
+            console.error('Error selecting PDF');
             Alert.alert('Error', 'Failed to select PDF file');
         }
     };
@@ -66,7 +79,6 @@ export const UploadPdfScreen = ({ navigation }: any) => {
 
             // Use unlockPdf to upload + unlock + process
             const response = await api.unlockPdf(formData);
-            console.log('Unlock response:', response);
 
             setUploadSuccess(true);
             Alert.alert(
@@ -80,19 +92,11 @@ export const UploadPdfScreen = ({ navigation }: any) => {
                 ]
             );
         } catch (error: any) {
-            console.error('Upload error:', error);
+            console.error('Upload failed');
             Alert.alert('Error', error.message || 'Failed to upload/unlock PDF');
         } finally {
             setUploading(false);
         }
-    };
-
-    const formatFileSize = (bytes: number) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     };
 
     return (
