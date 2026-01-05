@@ -3,11 +3,13 @@ import { View, StyleSheet } from 'react-native';
 import { Text, useTheme, Button, List, IconButton } from 'react-native-paper';
 import { api, PdfItem } from '../services/api';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ListView } from '../components/ListView';
 
 export const HistoryScreen = () => {
     const theme = useTheme();
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
     const [pdfs, setPdfs] = useState<PdfItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -133,14 +135,14 @@ export const HistoryScreen = () => {
                         navigation.navigate('StatementDetails', { id: item.id });
                     }
                 }}
-                style={styles.listItem}
+                style={[styles.listItem, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outlineVariant }]}
             />
         );
     };
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: insets.top }]}>
                 <Text variant="headlineMedium" style={{ fontWeight: 'bold', color: theme.colors.primary }}>
                     History
                 </Text>
@@ -170,7 +172,6 @@ const styles = StyleSheet.create({
     },
     header: {
         paddingHorizontal: 20,
-        paddingTop: 20,
         paddingBottom: 10,
     },
     listContent: {
@@ -178,8 +179,6 @@ const styles = StyleSheet.create({
         paddingTop: 8,
     },
     listItem: {
-        backgroundColor: 'white',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
     },
 });

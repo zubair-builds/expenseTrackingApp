@@ -50,6 +50,6 @@ const styles = StyleSheet.create({
         marginVertical: 4,
     },
     input: {
-        backgroundColor: 'transparent',
+        // backgroundColor: 'transparent', // Removed to follow MD3
     },
 });

@@ -4,6 +4,7 @@ import { Text, Button, FAB, Dialog, Portal, TextInput, List, IconButton, useThem
 import { ListView } from '../components/ListView';
 import { useAuthStore } from '../store/authStore';
 import { api } from '../services/api';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface PasswordItem {
     id: string;
@@ -14,6 +15,7 @@ interface PasswordItem {
 
 export const SettingsScreen = () => {
     const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const signOut = useAuthStore((state) => state.signOut);
 
     // State
@@ -25,6 +27,7 @@ export const SettingsScreen = () => {
     // Form State
     const [label, setLabel] = useState('');
     const [passwordValue, setPasswordValue] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [saving, setSaving] = useState(false);
 
     // Details State
@@ -149,19 +152,19 @@ export const SettingsScreen = () => {
                 />
             )}
             onPress={() => handleViewPassword(item.id, item.label)}
-            style={styles.listItem}
+            style={[styles.listItem, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outlineVariant }]}
         />
     );
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <View style={[styles.header, { paddingTop: insets.top }]}>
                 <Text variant="headlineMedium" style={{ fontWeight: 'bold', color: theme.colors.primary }}>
                     Settings
                 </Text>
             </View>
 
-            <View style={styles.sectionHeader}>
+            <View style={[styles.sectionHeader, { backgroundColor: theme.colors.surfaceVariant }]}>
                 <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>Password Manager</Text>
             </View>
 
@@ -175,7 +178,7 @@ export const SettingsScreen = () => {
                 contentContainerStyle={styles.listContent}
             />
 
-            <View style={styles.footer}>
+            <View style={[styles.footer, { borderTopColor: theme.colors.outlineVariant }]}>
                 <Button
                     mode="outlined"
                     onPress={signOut}
@@ -211,7 +214,8 @@ export const SettingsScreen = () => {
                             onChangeText={setPasswordValue}
                             style={styles.input}
                             mode="outlined"
-                            secureTextEntry // Initially hidden, but maybe show?
+                            secureTextEntry={!showPassword}
+                            right={<TextInput.Icon icon={showPassword ? "eye-off" : "eye"} onPress={() => setShowPassword(!showPassword)} />}
                         />
                     </Dialog.Content>
                     <Dialog.Actions>
@@ -249,30 +253,24 @@ export const SettingsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
     },
     header: {
         paddingHorizontal: 16,
-        paddingTop: 16,
         paddingBottom: 8,
     },
     sectionHeader: {
         paddingHorizontal: 16,
         paddingVertical: 8,
-        backgroundColor: '#E9ECEF',
     },
     listContent: {
         paddingBottom: 80,
     },
     listItem: {
-        backgroundColor: 'white',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
     },
     footer: {
         padding: 16,
         borderTopWidth: 1,
-        borderTopColor: '#ddd',
     },
     fab: {
         position: 'absolute',

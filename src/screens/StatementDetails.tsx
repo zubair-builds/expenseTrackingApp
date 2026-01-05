@@ -65,7 +65,7 @@ export const StatementDetailsScreen = () => {
 
     const renderHeader = () => (
         <View>
-            <Card style={styles.summaryCard} mode="elevated">
+            <Card style={[styles.summaryCard, { backgroundColor: theme.colors.surface }]} mode="elevated">
                 <Card.Content>
                     <View style={styles.headerRow}>
                         <View>
@@ -132,7 +132,7 @@ export const StatementDetailsScreen = () => {
                     </Text>
                 </View>
             )}
-            style={styles.listItem}
+            style={[styles.listItem, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outlineVariant }]}
         />
     );
 
@@ -146,7 +146,7 @@ export const StatementDetailsScreen = () => {
                 loading={false}
                 emptyText="No transactions found"
                 emptyIcon="bank-transfer"
-                contentContainerStyle={{ paddingBottom: 20 }}
+                contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 16 }}
             />
         </View>
     );
@@ -155,7 +155,6 @@ export const StatementDetailsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
     },
     loadingContainer: {
         flex: 1,
@@ -169,7 +168,6 @@ const styles = StyleSheet.create({
     },
     summaryCard: {
         marginBottom: 24,
-        backgroundColor: '#fff',
     },
     headerRow: {
         flexDirection: 'row',
@@ -194,12 +192,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 12,
-        paddingHorizontal: 16, // Match standard padding
+        paddingHorizontal: 0, // contentContainerStyle handles padding
         marginTop: 16,
     },
     listItem: {
-        backgroundColor: 'white',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
     },
 });
