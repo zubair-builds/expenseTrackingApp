@@ -1,16 +1,17 @@
 {
   "expo": {
-    "name": "expenseTrackeApp",
+    "name": "Expense Tracker – PDF Statements",
     "slug": "expenseTrackeApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "description": "Expense Tracker helps you understand your spending by automatically extracting transactions from your bank statement PDFs.\n\nInstead of manually entering expenses, simply upload your statement and view all your transactions in one place.\n\nKey features:\n• Upload bank or credit card statement PDFs\n• Automatic transaction extraction\n• View transactions across multiple statements\n• Clean and simple interface\n• No manual data entry\n\nYour data is processed securely and shown clearly, so you can focus on understanding your expenses without extra effort.\n\nThis app is designed for simplicity and clarity.\nMore features will be added over time.",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#008080"
     },
     "ios": {
       "supportsTablet": true
@@ -19,13 +20,18 @@
       "package": "com.expensetrackeapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#008080"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cb02ebf7-a264-46d8-9ac3-e10f2c267be7"
+      }
     }
   }
 }
