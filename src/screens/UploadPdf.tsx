@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Card, Snackbar, useTheme } from 'react-native-paper';
 import * as DocumentPicker from 'expo-document-picker';
 import { Button } from '../components/Button';
@@ -55,7 +55,6 @@ export const UploadPdfScreen = ({ navigation }: any) => {
             }
         } catch (error) {
             console.error('Error selecting PDF:', error);
-            Alert.alert('Error', 'Failed to select PDF file'); // Alert OK for native file picker error
             showSnackbar('Failed to select file', 'error');
         }
     };

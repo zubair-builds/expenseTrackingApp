@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, useTheme, Button, List, IconButton } from 'react-native-paper';
+import { Text, useTheme, Button, List, IconButton, Snackbar } from 'react-native-paper';
 import { api, PdfItem } from '../services/api';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,15 +14,22 @@ export const HistoryScreen = () => {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const fetchHistory = async () => {
+        setError(null);
         try {
             const data = await api.getPdfs(1, 20); // Fetch first 20 for now
             if (data.success) {
                 setPdfs(data.pdfs);
+            } else {
+                setError('Failed to load history');
             }
-        } catch (error) {
-            console.error('Failed to fetch history:', error);
+        } catch (err) {
+            console.error('Failed to fetch history:', err);
+            setError('Network error. Please try again.');
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -57,14 +64,22 @@ export const HistoryScreen = () => {
 
     const handleAnalyze = async (pdfId: string) => {
         setAnalyzingId(pdfId);
+        setSnackbarMessage('Analysis started...');
+        setSnackbarVisible(true);
         try {
             const result = await api.analyzeStatement(pdfId);
             if (result.success) {
-                // Refresh list on success to show new data
+                setSnackbarMessage('Analysis complete!');
+                setSnackbarVisible(true);
                 fetchHistory();
+            } else {
+                setSnackbarMessage('Analysis failed. Please try again.');
+                setSnackbarVisible(true);
             }
         } catch (error) {
             console.error('Analysis failed', error);
+            setSnackbarMessage('Analysis failed. Network error.');
+            setSnackbarVisible(true);
         } finally {
             setAnalyzingId(null);
         }
@@ -141,6 +156,19 @@ export const HistoryScreen = () => {
         );
     };
 
+    if (error && !refreshing && pdfs.length === 0) {
+        return (
+            <View style={[styles.container, styles.center, { backgroundColor: theme.colors.background }]}>
+                <Text variant="titleMedium" style={{ marginBottom: 16, color: theme.colors.error }}>
+                    {error}
+                </Text>
+                <Button mode="contained" onPress={fetchHistory}>
+                    Retry
+                </Button>
+            </View>
+        );
+    }
+
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
@@ -166,6 +194,18 @@ export const HistoryScreen = () => {
                 emptyIcon="file-document-outline"
                 contentContainerStyle={styles.listContent}
             />
+
+            <Snackbar
+                visible={snackbarVisible}
+                onDismiss={() => setSnackbarVisible(false)}
+                duration={3000}
+                action={{
+                    label: 'Close',
+                    onPress: () => setSnackbarVisible(false),
+                }}
+            >
+                {snackbarMessage}
+            </Snackbar>
         </View>
     );
 };
@@ -184,5 +224,10 @@ const styles = StyleSheet.create({
     },
     listItem: {
         borderBottomWidth: 1,
+    },
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
     },
 });

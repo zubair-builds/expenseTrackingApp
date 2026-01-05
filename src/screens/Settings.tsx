@@ -3,7 +3,6 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { Text, Button, FAB, Dialog, Portal, TextInput, List, IconButton, useTheme, Snackbar, SegmentedButtons } from 'react-native-paper';
 import { ListView } from '../components/ListView';
 import { useAuthStore } from '../store/authStore';
-import { useThemeStore } from '../store/themeStore';
 import { api } from '../services/api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,7 +17,6 @@ export const SettingsScreen = () => {
     const theme = useTheme();
     const insets = useSafeAreaInsets();
     const signOut = useAuthStore((state) => state.signOut);
-    const { themeMode, setThemeMode } = useThemeStore();
 
     // State
     const [passwords, setPasswords] = useState<PasswordItem[]>([]);
@@ -152,22 +150,7 @@ export const SettingsScreen = () => {
                 </Text>
             </View>
 
-            <View style={[styles.sectionHeader, { backgroundColor: theme.colors.surfaceVariant }]}>
-                <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>Appearance</Text>
-            </View>
 
-            <View style={styles.appearanceContainer}>
-                <SegmentedButtons
-                    value={themeMode}
-                    onValueChange={val => setThemeMode(val as any)}
-                    buttons={[
-                        { value: 'system', label: 'System' },
-                        { value: 'light', label: 'Light' },
-                        { value: 'dark', label: 'Dark' },
-                    ]}
-                    style={{ margin: 16 }}
-                />
-            </View>
 
             <View style={[styles.sectionHeader, { backgroundColor: theme.colors.surfaceVariant }]}>
                 <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>Password Manager</Text>

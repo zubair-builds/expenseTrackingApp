@@ -3,7 +3,7 @@ import { PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
 import { RootNavigator } from './src/navigation/RootNavigator';
-import { useThemeStore } from './src/store/themeStore';
+import { StatusBar } from 'expo-status-bar';
 
 // Material Design 3 Light Theme
 const lightTheme = {
@@ -49,18 +49,14 @@ const darkTheme = {
 
 export default function App() {
   const scheme = useColorScheme();
-  const { themeMode, loadTheme } = useThemeStore();
 
-  useEffect(() => {
-    loadTheme();
-  }, []);
-
-  const isDark = themeMode === 'dark' || (themeMode === 'system' && scheme === 'dark');
+  const isDark = scheme === 'dark';
   const theme = isDark ? darkTheme : lightTheme;
 
   return (
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <RootNavigator />
       </PaperProvider>
     </SafeAreaProvider>

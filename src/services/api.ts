@@ -87,7 +87,7 @@ export const api = {
                 headers,
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 // Return defaults if no statements found
@@ -137,7 +137,7 @@ export const api = {
                 }),
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(data.error || 'Login failed');
@@ -175,7 +175,7 @@ export const api = {
                 }),
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(data.error || 'Signup failed');
@@ -205,7 +205,7 @@ export const api = {
                 headers,
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(data.error || 'Failed to fetch history');
@@ -232,7 +232,7 @@ export const api = {
                 body: formData,
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(data.error || 'Upload failed');
@@ -260,7 +260,7 @@ export const api = {
                 body: formData,
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(data.error || 'Unlock failed');
@@ -283,7 +283,7 @@ export const api = {
                 method: 'GET',
                 headers,
             });
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error || 'Failed to fetch passwords');
             return data;
         } catch (error) {
@@ -303,7 +303,7 @@ export const api = {
                 headers,
                 body: JSON.stringify({ label, password }),
             });
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error || 'Failed to create password');
             return data;
         } catch (error) {
@@ -322,7 +322,7 @@ export const api = {
                 method: 'DELETE',
                 headers,
             });
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error || 'Failed to delete password');
             return data;
         } catch (error) {
@@ -342,7 +342,7 @@ export const api = {
                 method: 'GET',
                 headers,
             });
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error || 'Failed to fetch password details');
             return data;
         } catch (error) {
@@ -362,7 +362,7 @@ export const api = {
                 body: JSON.stringify({ pdfId }),
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(data.error || 'Analysis failed');
@@ -386,7 +386,7 @@ export const api = {
                 headers,
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(data.error || 'Failed to fetch statement details');

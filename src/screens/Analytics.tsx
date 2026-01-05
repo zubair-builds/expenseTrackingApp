@@ -237,8 +237,16 @@ export const AnalyticsScreen = () => {
                     </Card.Content>
                 </Card>
             ) : (
-                <View style={[styles.card, { padding: 24, alignItems: 'center' }]}>
-                    <Text>No sufficient data for charts yet.</Text>
+                <View style={[styles.card, { padding: 32, alignItems: 'center', backgroundColor: theme.colors.surfaceVariant, borderRadius: 16 }]}>
+                    <ActivityIndicator size="small" style={{ marginBottom: 16, display: 'none' }} />
+                    {/* Just using surfaceVariant for a subtle block, no icon needed if we want to be minimal, 
+                        but let's make it look intentional. */}
+                    <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}>
+                        Not enough data yet
+                    </Text>
+                    <Text variant="bodySmall" style={{ color: theme.colors.outline, textAlign: 'center', marginTop: 4 }}>
+                        Upload more statements to see trends
+                    </Text>
                 </View>
             )}
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ListView } from '../components/ListView';
-import { Text, Card, ActivityIndicator, useTheme, Divider, Avatar, List } from 'react-native-paper';
+import { Text, Card, ActivityIndicator, useTheme, Divider, Avatar, List, Button } from 'react-native-paper';
 import { api, StatementDetail, Transaction } from '../services/api';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 export const StatementDetailsScreen = () => {
     const theme = useTheme();
     const route = useRoute();
+    const navigation = useNavigation();
     const [statement, setStatement] = useState<StatementDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const { id } = route.params as { id: string };
@@ -56,7 +57,13 @@ export const StatementDetailsScreen = () => {
     if (!statement) {
         return (
             <View style={styles.errorContainer}>
-                <Text variant="titleMedium">Failed to load statement details</Text>
+                <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+                <Text variant="titleMedium" style={{ marginTop: 16, marginBottom: 8 }}>
+                    Something went wrong
+                </Text>
+                <Button mode="contained" onPress={() => navigation.goBack()}>
+                    Go Back
+                </Button>
             </View>
         );
     }
@@ -77,7 +84,7 @@ export const StatementDetailsScreen = () => {
 
                     <Divider style={styles.divider} />
 
-                    <View style={styles.balanceContainer}>
+                    <View style={[styles.balanceContainer, { backgroundColor: theme.colors.elevation.level2, padding: 12, borderRadius: 8 }]}>
                         <Text variant="labelMedium">New Balance</Text>
                         <Text variant="headlineMedium" style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
                             {formatCurrency(summary.newBalance)}
