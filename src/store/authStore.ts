@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../services/api';
+import { TOKEN_STORAGE_KEY } from '../constants';
 
-const TOKEN_KEY = '@auth_token';
+const TOKEN_KEY = TOKEN_STORAGE_KEY;
 
 interface User {
     email: string;
@@ -64,7 +65,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     signOut: async () => {
-        console.log('👋 Sign Out');
         // Remove token from AsyncStorage
         await AsyncStorage.removeItem(TOKEN_KEY);
 
@@ -79,7 +79,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         try {
             const token = await AsyncStorage.getItem(TOKEN_KEY);
             if (token) {
-                // TODO: Optionally verify token with backend
+                // Token verification with backend would be ideal but adds latency on app startup
+                // Consider implementing if security requirements change
                 set({
                     isAuthenticated: true,
                     token,
@@ -89,7 +90,7 @@ export const useAuthStore = create<AuthState>((set) => ({
                 set({ isLoading: false });
             }
         } catch (error) {
-            console.error('Failed to load token:', error);
+            console.error('Failed to load token');
             set({ isLoading: false });
         }
     },

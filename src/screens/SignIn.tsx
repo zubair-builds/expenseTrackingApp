@@ -4,8 +4,15 @@ import { Text, Card, Snackbar } from 'react-native-paper';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { validateEmail, validatePassword } from '../utils/validation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '../types/navigation';
 
-export const SignInScreen = ({ navigation }: any) => {
+type SignInScreenProps = {
+    navigation: NativeStackNavigationProp<AuthStackParamList, 'SignIn'>;
+};
+
+export const SignInScreen = ({ navigation }: SignInScreenProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -22,12 +29,9 @@ export const SignInScreen = ({ navigation }: any) => {
         let isValid = true;
 
         // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email) {
-            newErrors.email = 'Email is required';
-            isValid = false;
-        } else if (!emailRegex.test(email)) {
-            newErrors.email = 'Invalid email format';
+        const emailValidation = validateEmail(email);
+        if (!emailValidation.isValid) {
+            newErrors.email = emailValidation.error || '';
             isValid = false;
         }
 
@@ -53,7 +57,6 @@ export const SignInScreen = ({ navigation }: any) => {
             setSnackbarType('success');
             setSnackbarVisible(true);
         } catch (error: any) {
-            console.log('Sign in error:', error);
             setSnackbarMessage(error.message || 'Login failed. Please check your credentials.');
             setSnackbarType('error');
             setSnackbarVisible(true);

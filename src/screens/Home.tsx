@@ -3,8 +3,22 @@ import { View, StyleSheet } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { TabParamList } from '../types/navigation';
 
-export const HomeScreen = ({ navigation }: any) => {
+type HomeScreenNavigationProp = CompositeNavigationProp<
+    BottomTabNavigationProp<TabParamList, 'Home'>,
+    NativeStackNavigationProp<RootStackParamList>
+>;
+
+type HomeScreenProps = {
+    navigation: HomeScreenNavigationProp;
+};
+
+export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     const user = useAuthStore((state) => state.user);
     const signOut = useAuthStore((state) => state.signOut);
 

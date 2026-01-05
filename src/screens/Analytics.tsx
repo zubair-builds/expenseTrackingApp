@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, RefreshControl, Dimensions } from 'react-
 import { Text, Card, ActivityIndicator, useTheme, SegmentedButtons } from 'react-native-paper';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import { api } from '../services/api';
+import { formatCurrency } from '../utils/formatters';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -34,14 +35,6 @@ export const AnalyticsScreen = () => {
     const onRefresh = () => {
         setRefreshing(true);
         fetchAnalytics();
-    };
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'PKR',
-            maximumFractionDigits: 0,
-        }).format(amount);
     };
 
     if (loading && !refreshing) {

@@ -4,6 +4,7 @@ import { Text, useTheme, Button, List, IconButton } from 'react-native-paper';
 import { api, PdfItem } from '../services/api';
 import { useNavigation } from '@react-navigation/native';
 import { ListView } from '../components/ListView';
+import { formatDate, formatCurrency } from '../utils/formatters';
 
 export const HistoryScreen = () => {
     const theme = useTheme();
@@ -36,23 +37,6 @@ export const HistoryScreen = () => {
         fetchHistory();
     };
 
-    const formatDate = (dateString?: string | null) => {
-        if (!dateString) return 'Unknown Date';
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
-
-    const formatCurrency = (amount?: number | null) => {
-        if (amount === undefined || amount === null) return null;
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'PKR', // Configurable later
-        }).format(amount);
-    };
-
     const handleAnalyze = async (pdfId: string) => {
         setAnalyzingId(pdfId);
         try {
@@ -62,7 +46,7 @@ export const HistoryScreen = () => {
                 fetchHistory();
             }
         } catch (error) {
-            console.error('Analysis failed', error);
+            console.error('Analysis failed');
         } finally {
             setAnalyzingId(null);
         }

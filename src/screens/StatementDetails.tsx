@@ -5,6 +5,7 @@ import { Text, Card, ActivityIndicator, useTheme, Divider, Avatar, List } from '
 import { api, StatementDetail, Transaction } from '../services/api';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { formatCurrency, formatDate } from '../utils/formatters';
 
 export const StatementDetailsScreen = () => {
     const theme = useTheme();
@@ -29,21 +30,6 @@ export const StatementDetailsScreen = () => {
 
         fetchDetails();
     }, [id]);
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'PKR',
-        }).format(amount);
-    };
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
 
     if (loading) {
         return (
