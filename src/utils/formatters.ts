@@ -6,11 +6,12 @@ import { DEFAULT_CURRENCY } from '../constants';
 
 /**
  * Format a number as currency
- * @param amount - Amount to format
+ * @param amount - Amount to format (can be null/undefined)
  * @param currency - Currency code (default: from constants)
- * @returns Formatted currency string
+ * @returns Formatted currency string or null if amount is null/undefined
  */
-export const formatCurrency = (amount: number, currency: string = DEFAULT_CURRENCY): string => {
+export const formatCurrency = (amount: number | null | undefined, currency: string = DEFAULT_CURRENCY): string | null => {
+    if (amount === null || amount === undefined) return null;
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency,
@@ -38,6 +39,7 @@ export const formatDate = (dateString?: string | null): string => {
  * @returns Formatted file size string
  */
 export const formatFileSize = (bytes: number): string => {
+    if (bytes < 0) return 'Invalid size';
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];

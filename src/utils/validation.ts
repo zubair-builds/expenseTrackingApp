@@ -2,7 +2,7 @@
  * Validation utilities for user inputs
  */
 
-import { MIN_PASSWORD_LENGTH, EMAIL_REGEX } from '../constants';
+import { MIN_PASSWORD_LENGTH, EMAIL_REGEX, ALLOWED_FILE_TYPES } from '../constants';
 
 /**
  * Validate email format
@@ -60,5 +60,5 @@ export const isValidFileSize = (sizeInBytes: number, maxSizeInMB: number = 10): 
  * @returns True if file is PDF
  */
 export const isPdfFile = (mimeType: string): boolean => {
-    return mimeType === 'application/pdf';
+    return ALLOWED_FILE_TYPES.includes(mimeType);
 };

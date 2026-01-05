@@ -5,9 +5,17 @@ import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { TabParamList } from '../types/navigation';
+
+type HomeScreenNavigationProp = CompositeNavigationProp<
+    BottomTabNavigationProp<TabParamList, 'Home'>,
+    NativeStackNavigationProp<RootStackParamList>
+>;
 
 type HomeScreenProps = {
-    navigation: NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
+    navigation: HomeScreenNavigationProp;
 };
 
 export const HomeScreen = ({ navigation }: HomeScreenProps) => {
