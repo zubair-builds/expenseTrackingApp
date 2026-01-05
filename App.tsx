@@ -5,15 +5,18 @@ import { useColorScheme } from 'react-native';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { StatusBar } from 'expo-status-bar';
 
+import { useAuthStore } from './src/store/authStore';
+import { useThemeStore } from './src/store/themeStore';
+
 // Material Design 3 Light Theme
 const lightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: '#0047AB', // Deep Cobalt Blue
+    primary: '#52A8A6', // Brand Teal
     onPrimary: '#FFFFFF',
-    primaryContainer: '#D6E4FF',
-    onPrimaryContainer: '#001B3D',
+    primaryContainer: '#E0F2F1', // Light Teal/Mint
+    onPrimaryContainer: '#004D40',
     secondary: '#006D77', // Teal
     onSecondary: '#FFFFFF',
     tertiary: '#6A5ACD', // Slate Blue
@@ -31,10 +34,10 @@ const darkTheme = {
   ...MD3DarkTheme,
   colors: {
     ...MD3DarkTheme.colors,
-    primary: '#D6E4FF', // Light Cobalt
-    onPrimary: '#001B3D',
-    primaryContainer: '#0047AB',
-    onPrimaryContainer: '#D6E4FF',
+    primary: '#52A8A6', // Brand Teal
+    onPrimary: '#00363D', // Darker text on teal
+    primaryContainer: '#004D40', // Dark Teal
+    onPrimaryContainer: '#E0F2F1',
     secondary: '#4DD0E1', // Light Teal
     onSecondary: '#00363D',
     tertiary: '#D0BCFF', // Light Slate Blue
@@ -49,9 +52,19 @@ const darkTheme = {
 
 export default function App() {
   const scheme = useColorScheme();
+  const themeMode = useThemeStore((state) => state.themeMode);
 
-  const isDark = scheme === 'dark';
+  // Determine active theme
+  let isDark = scheme === 'dark';
+  if (themeMode === 'light') isDark = false;
+  if (themeMode === 'dark') isDark = true;
+
   const theme = isDark ? darkTheme : lightTheme;
+
+  useEffect(() => {
+    // Load auth token on app startup
+    useAuthStore.getState().loadToken();
+  }, []);
 
   return (
     <SafeAreaProvider>

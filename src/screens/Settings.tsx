@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import { Text, Button, FAB, Dialog, Portal, TextInput, List, IconButton, useTheme, Snackbar, SegmentedButtons } from 'react-native-paper';
+import { Text, FAB, Dialog, Portal, TextInput, List, IconButton, useTheme, Snackbar, SegmentedButtons } from 'react-native-paper';
+import { Button } from '../components/Button';
 import { ListView } from '../components/ListView';
 import { useAuthStore } from '../store/authStore';
 import { api } from '../services/api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { useThemeStore } from '../store/themeStore';
 
 interface PasswordItem {
     id: string;
@@ -15,8 +18,10 @@ interface PasswordItem {
 
 export const SettingsScreen = () => {
     const theme = useTheme();
+    const navigation = useNavigation();
     const insets = useSafeAreaInsets();
     const signOut = useAuthStore((state) => state.signOut);
+    const { themeMode, setThemeMode } = useThemeStore();
 
     // State
     const [passwords, setPasswords] = useState<PasswordItem[]>([]);
@@ -142,13 +147,26 @@ export const SettingsScreen = () => {
         />
     );
 
+    React.useLayoutEffect(() => {
+        navigation.setOptions({ title: 'Settings' });
+    }, [navigation]);
+
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            <View style={[styles.header, { paddingTop: insets.top }]}>
-                <Text variant="headlineMedium" style={{ fontWeight: 'bold', color: theme.colors.primary }}>
-                    Settings
-                </Text>
-            </View>
+            {(
+                <View style={{ padding: 16, backgroundColor: theme.colors.surfaceVariant }}>
+                    <Text variant="labelMedium" style={{ marginBottom: 8 }}>DEV: Theme Override</Text>
+                    <SegmentedButtons
+                        value={themeMode}
+                        onValueChange={setThemeMode as any}
+                        buttons={[
+                            { value: 'system', label: 'System' },
+                            { value: 'light', label: 'Light' },
+                            { value: 'dark', label: 'Dark' },
+                        ]}
+                    />
+                </View>
+            )}
 
 
 

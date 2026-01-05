@@ -15,12 +15,13 @@ export const AppNavigator = () => {
             initialRouteName="MainTabs"
             screenOptions={{
                 headerStyle: {
-                    backgroundColor: theme.colors.primary,
+                    backgroundColor: theme.colors.surface,
                 },
-                headerTintColor: theme.colors.onPrimary,
+                headerTintColor: theme.colors.onSurface,
                 headerTitleStyle: {
-                    fontWeight: 'bold',
+                    fontWeight: '600',
                 },
+                headerShadowVisible: false, // Clean look, manual border if needed
             }}
         >
             <Stack.Screen

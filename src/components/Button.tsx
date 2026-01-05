@@ -42,6 +42,7 @@ export const Button: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
     button: {
         marginVertical: 8,
+        borderRadius: 12,
     },
     buttonContent: {
         paddingVertical: 6,

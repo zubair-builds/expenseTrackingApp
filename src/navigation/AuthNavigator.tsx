@@ -11,7 +11,7 @@ export const AuthNavigator = () => {
             initialRouteName="SignIn"
             screenOptions={{
                 headerStyle: {
-                    backgroundColor: '#6200ee',
+                    backgroundColor: '#52A8A6',
                 },
                 headerTintColor: '#fff',
                 headerTitleStyle: {

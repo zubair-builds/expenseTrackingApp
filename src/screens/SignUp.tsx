@@ -179,7 +179,6 @@ const styles = StyleSheet.create({
         marginTop: 16,
         marginBottom: 24,
         paddingVertical: 6,
-        borderRadius: 50,
     },
     footerContainer: {
         flexDirection: 'row',

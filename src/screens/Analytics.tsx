@@ -4,12 +4,18 @@ import { Text, Card, ActivityIndicator, useTheme, SegmentedButtons } from 'react
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import { api } from '../services/api';
+import { useNavigation } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
 
 export const AnalyticsScreen = () => {
     const theme = useTheme();
+    const navigation = useNavigation();
     const insets = useSafeAreaInsets();
+
+    React.useLayoutEffect(() => {
+        navigation.setOptions({ title: 'Overview' });
+    }, [navigation]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [analyticsData, setAnalyticsData] = useState<any>(null);
@@ -107,13 +113,14 @@ export const AnalyticsScreen = () => {
             .filter((item) => item !== null);
     }
 
+
+
     return (
         <ScrollView
             style={[styles.container, { backgroundColor: theme.colors.background }]}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16 }]}
         >
-            <Text variant="titleLarge" style={[styles.headerTitle, { color: theme.colors.primary }]}>Overview</Text>
 
             {/* Summary Cards Row 1 */}
             <View style={styles.row}>

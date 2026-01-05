@@ -19,14 +19,14 @@ export const HomeScreen = ({ navigation }: any) => {
         signOut();
     };
 
+    React.useLayoutEffect(() => {
+        navigation.setOptions({ title: 'Track Expenses' });
+    }, [navigation]);
+
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: insets.top }]}>
             <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
                 <Card.Content>
-                    <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
-                        Track Expenses
-                    </Text>
-
                     <Text variant="labelLarge" style={[styles.email, { color: theme.colors.onSurfaceVariant }]}>
                         {user?.email}
                     </Text>

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ListView } from '../components/ListView';
-import { Text, Card, ActivityIndicator, useTheme, Divider, Avatar, List, Button } from 'react-native-paper';
+import { Text, Card, ActivityIndicator, useTheme, Divider, Avatar, List } from 'react-native-paper';
+import { Button } from '../components/Button';
 import { api, StatementDetail, Transaction } from '../services/api';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';

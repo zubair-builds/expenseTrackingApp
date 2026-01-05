@@ -107,9 +107,6 @@ export const UploadPdfScreen = ({ navigation }: any) => {
             <ScrollView contentContainerStyle={{ padding: 16 }}>
                 <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
-                        <Text variant="headlineSmall" style={styles.title}>
-                            Upload PDF Statement
-                        </Text>
                         <Text variant="bodyMedium" style={styles.description}>
                             Select your credit card statement (PDF)
                         </Text>

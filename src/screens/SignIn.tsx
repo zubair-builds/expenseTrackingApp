@@ -73,7 +73,7 @@ export const SignInScreen = ({ navigation }: any) => {
         >
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
                 <View style={[styles.headerContainer, { paddingTop: insets.top + 20 }]}>
-                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontWeight: '700', marginBottom: 8 }}>
+                    <Text variant="displaySmall" style={{ color: theme.colors.onSurface, fontWeight: '700', marginBottom: 8 }}>
                         Welcome back
                     </Text>
                     <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant }}>
@@ -180,7 +180,6 @@ const styles = StyleSheet.create({
     signInButton: {
         marginBottom: 24,
         paddingVertical: 6,
-        borderRadius: 50,
     },
     footerContainer: {
         flexDirection: 'row',

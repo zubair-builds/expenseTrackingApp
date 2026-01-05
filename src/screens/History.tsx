@@ -156,6 +156,10 @@ export const HistoryScreen = () => {
         );
     };
 
+    React.useLayoutEffect(() => {
+        navigation.setOptions({ title: 'Statements' });
+    }, [navigation]);
+
     if (error && !refreshing && pdfs.length === 0) {
         return (
             <View style={[styles.container, styles.center, { backgroundColor: theme.colors.background }]}>
@@ -171,18 +175,6 @@ export const HistoryScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-                <Text variant="headlineMedium" style={{ color: theme.colors.primary, marginBottom: 4 }}>
-                    Statements
-                </Text>
-                <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 2 }}>
-                    Monthly uploaded statements
-                </Text>
-                <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
-                    Tap a statement to view details or reprocess
-                </Text>
-            </View>
-
             <ListView
                 data={pdfs}
                 renderItem={renderItem}
