@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { Text, Card, Snackbar } from 'react-native-paper';
+import { Text, Card, Snackbar, useTheme } from 'react-native-paper';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const SignInScreen = ({ navigation }: any) => {
+    const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -65,13 +68,13 @@ export const SignInScreen = ({ navigation }: any) => {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
+            style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
-            <View style={styles.headerContainer}>
-                <Text variant="displaySmall" style={styles.headerTitle}>
+            <View style={[styles.headerContainer, { paddingTop: insets.top + 20 }]}>
+                <Text variant="displaySmall" style={{ color: theme.colors.primary, fontWeight: '700', marginBottom: 8 }}>
                     Welcome back
                 </Text>
-                <Text variant="bodyLarge" style={styles.headerSubtitle}>
+                <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant }}>
                     Securely sign in to your financial dashboard
                 </Text>
             </View>
@@ -117,7 +120,7 @@ export const SignInScreen = ({ navigation }: any) => {
                 </Button>
 
                 <View style={styles.footerContainer}>
-                    <Text variant="bodyMedium" style={{ color: '#444' }}>
+                    <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
                         Don't have an account?
                     </Text>
                     <Button
@@ -135,7 +138,7 @@ export const SignInScreen = ({ navigation }: any) => {
                 onDismiss={() => setSnackbarVisible(false)}
                 duration={3000}
                 style={{
-                    backgroundColor: snackbarType === 'error' ? '#BA1A1A' : '#006D77',
+                    backgroundColor: snackbarType === 'error' ? theme.colors.error : theme.colors.primary,
                     marginBottom: 20,
                     borderRadius: 8,
                 }}
@@ -149,21 +152,12 @@ export const SignInScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
     },
     headerContainer: {
         flex: 0.35,
         justifyContent: 'flex-end',
         paddingHorizontal: 24,
         paddingBottom: 32,
-    },
-    headerTitle: {
-        color: '#0047AB',
-        fontWeight: '700',
-        marginBottom: 8,
-    },
-    headerSubtitle: {
-        color: '#555',
     },
     formContainer: {
         flex: 0.65,
@@ -179,7 +173,7 @@ const styles = StyleSheet.create({
     signInButton: {
         marginBottom: 24,
         paddingVertical: 6,
-        borderRadius: 50, // Pill shape for primary actions
+        borderRadius: 50,
     },
     footerContainer: {
         flexDirection: 'row',
@@ -188,5 +182,4 @@ const styles = StyleSheet.create({
         marginTop: 'auto',
         marginBottom: 32,
     },
-    // Remnants of old styles removed
 });

@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, Card } from 'react-native-paper';
+import { Text, Card, useTheme } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
 
 export const HomeScreen = ({ navigation }: any) => {
+    const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const user = useAuthStore((state) => state.user);
     const signOut = useAuthStore((state) => state.signOut);
 
@@ -17,16 +20,16 @@ export const HomeScreen = ({ navigation }: any) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Card style={styles.card}>
+        <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: insets.top }]}>
+            <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
                 <Card.Content>
-                    <Text variant="headlineMedium" style={styles.title}>
+                    <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
                         Welcome! 👋
                     </Text>
-                    <Text variant="bodyLarge" style={styles.email}>
+                    <Text variant="bodyLarge" style={[styles.email, { color: theme.colors.primary }]}>
                         {user?.email}
                     </Text>
-                    <Text variant="bodyMedium" style={styles.description}>
+                    <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurfaceVariant }]}>
                         Upload your credit card statement to track your expenses
                     </Text>
 
@@ -40,7 +43,8 @@ export const HomeScreen = ({ navigation }: any) => {
                     <Button
                         mode="outlined"
                         onPress={handleSignOut}
-                        style={styles.signOutButton}
+                        textColor={theme.colors.error}
+                        style={[styles.signOutButton, { borderColor: theme.colors.error }]}
                     >
                         Sign Out
                     </Button>
@@ -53,7 +57,6 @@ export const HomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
         padding: 16,
         justifyContent: 'center',
     },
@@ -68,12 +71,10 @@ const styles = StyleSheet.create({
     email: {
         textAlign: 'center',
         marginBottom: 16,
-        color: '#6200ee',
     },
     description: {
         textAlign: 'center',
         marginBottom: 24,
-        opacity: 0.7,
     },
     uploadButton: {
         marginTop: 8,

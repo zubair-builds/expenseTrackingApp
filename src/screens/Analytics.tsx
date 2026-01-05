@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, Dimensions } from 'react-native';
 import { Text, Card, ActivityIndicator, useTheme, SegmentedButtons } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import { api } from '../services/api';
 
@@ -8,6 +9,7 @@ const screenWidth = Dimensions.get('window').width;
 
 export const AnalyticsScreen = () => {
     const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [analyticsData, setAnalyticsData] = useState<any>(null);
@@ -100,15 +102,15 @@ export const AnalyticsScreen = () => {
 
     return (
         <ScrollView
-            style={styles.container}
+            style={[styles.container, { backgroundColor: theme.colors.background }]}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-            contentContainerStyle={styles.contentContainer}
+            contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16 }]}
         >
-            <Text variant="headlineMedium" style={styles.headerTitle}>Overview</Text>
+            <Text variant="headlineMedium" style={[styles.headerTitle, { color: theme.colors.primary }]}>Overview</Text>
 
             {/* Summary Cards Row 1 */}
             <View style={styles.row}>
-                <Card style={[styles.card, styles.halfCard]}>
+                <Card style={[styles.card, styles.halfCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="labelMedium" style={{ color: theme.colors.primary }}>Total Spent</Text>
                         <Text variant="titleLarge" style={styles.amountText}>
@@ -117,7 +119,7 @@ export const AnalyticsScreen = () => {
                     </Card.Content>
                 </Card>
 
-                <Card style={[styles.card, styles.halfCard]}>
+                <Card style={[styles.card, styles.halfCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="labelMedium" style={{ color: theme.colors.tertiary }}>Avg/Month</Text>
                         <Text variant="titleLarge" style={styles.amountText}>
@@ -129,7 +131,7 @@ export const AnalyticsScreen = () => {
 
             {/* Summary Cards Row 2 */}
             <View style={styles.row}>
-                <Card style={[styles.card, styles.halfCard]}>
+                <Card style={[styles.card, styles.halfCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="labelMedium">Transactions</Text>
                         <Text variant="titleLarge" style={styles.amountText}>
@@ -137,7 +139,7 @@ export const AnalyticsScreen = () => {
                         </Text>
                     </Card.Content>
                 </Card>
-                <Card style={[styles.card, styles.halfCard]}>
+                <Card style={[styles.card, styles.halfCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="labelMedium">Top Category</Text>
                         <Text variant="titleMedium" numberOfLines={1} style={styles.amountText}>
@@ -161,7 +163,7 @@ export const AnalyticsScreen = () => {
             />
 
             {chartView === 'spending' && lineChartData.length > 0 ? (
-                <Card style={styles.chartCard}>
+                <Card style={[styles.chartCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="titleMedium" style={styles.chartTitle}>Monthly Spending</Text>
                         <LineChart
@@ -197,7 +199,7 @@ export const AnalyticsScreen = () => {
                     </Card.Content>
                 </Card>
             ) : chartView === 'categories' && pieChartData.length > 0 ? (
-                <Card style={styles.chartCard}>
+                <Card style={[styles.chartCard, { backgroundColor: theme.colors.surface }]}>
                     <Card.Content>
                         <Text variant="titleMedium" style={styles.chartTitle}>Top Categories</Text>
                         <PieChart
@@ -254,7 +256,6 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     card: {
-        backgroundColor: '#FFFFFF',
         elevation: 2,
     },
     halfCard: {
@@ -268,7 +269,6 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     chartCard: {
-        backgroundColor: '#FFFFFF',
         elevation: 2,
         alignItems: 'center',
     },

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Text, Card } from 'react-native-paper';
+import { Text, Card, Snackbar, useTheme } from 'react-native-paper';
 import * as DocumentPicker from 'expo-document-picker';
 import { Button } from '../components/Button';
+import { Input } from '../components/Input';
 import { api } from '../services/api';
-
-import { TextInput } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const UploadPdfScreen = ({ navigation }: any) => {
+    const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const [selectedFile, setSelectedFile] = useState<{
         name: string;
         size: number;
@@ -17,6 +19,17 @@ export const UploadPdfScreen = ({ navigation }: any) => {
     const [password, setPassword] = useState('');
     const [uploading, setUploading] = useState(false);
     const [uploadSuccess, setUploadSuccess] = useState(false);
+
+    // Snackbar state
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarType, setSnackbarType] = useState<'error' | 'success'>('error');
+
+    const showSnackbar = (message: string, type: 'error' | 'success') => {
+        setSnackbarMessage(message);
+        setSnackbarType(type);
+        setSnackbarVisible(true);
+    };
 
     const handleSelectPdf = async () => {
         try {
@@ -42,7 +55,8 @@ export const UploadPdfScreen = ({ navigation }: any) => {
             }
         } catch (error) {
             console.error('Error selecting PDF:', error);
-            Alert.alert('Error', 'Failed to select PDF file');
+            Alert.alert('Error', 'Failed to select PDF file'); // Alert OK for native file picker error
+            showSnackbar('Failed to select file', 'error');
         }
     };
 
@@ -50,7 +64,7 @@ export const UploadPdfScreen = ({ navigation }: any) => {
         if (!selectedFile) return;
 
         if (!password || password.trim() === '') {
-            Alert.alert('Password Required', 'Please enter the PDF password to unlock and process it.');
+            showSnackbar('Please enter the PDF password', 'error');
             return;
         }
 
@@ -69,19 +83,13 @@ export const UploadPdfScreen = ({ navigation }: any) => {
             console.log('Unlock response:', response);
 
             setUploadSuccess(true);
-            Alert.alert(
-                'Success! 🎉',
-                'PDF unlocked and processed successfully.',
-                [
-                    {
-                        text: 'OK',
-                        onPress: () => navigation.goBack(),
-                    },
-                ]
-            );
+            setUploadSuccess(true);
+            showSnackbar('PDF unlocked and processed successfully!', 'success');
+            setTimeout(() => navigation.goBack(), 1500);
         } catch (error: any) {
             console.error('Upload error:', error);
-            Alert.alert('Error', error.message || 'Failed to upload/unlock PDF');
+            console.error('Upload error:', error);
+            showSnackbar(error.message || 'Failed to upload/unlock PDF', 'error');
         } finally {
             setUploading(false);
         }
@@ -96,83 +104,91 @@ export const UploadPdfScreen = ({ navigation }: any) => {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <Card style={styles.card}>
-                <Card.Content>
-                    <Text variant="headlineSmall" style={styles.title}>
-                        Upload PDF Statement
-                    </Text>
-                    <Text variant="bodyMedium" style={styles.description}>
-                        Select your credit card statement (PDF)
-                    </Text>
+        <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: insets.top }]}>
+            <ScrollView contentContainerStyle={{ padding: 16 }}>
+                <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+                    <Card.Content>
+                        <Text variant="headlineSmall" style={styles.title}>
+                            Upload PDF Statement
+                        </Text>
+                        <Text variant="bodyMedium" style={styles.description}>
+                            Select your credit card statement (PDF)
+                        </Text>
 
-                    <Button
-                        mode="outlined"
-                        onPress={handleSelectPdf}
-                        style={styles.selectButton}
-                    >
-                        Select PDF File
-                    </Button>
+                        <Button
+                            mode="outlined"
+                            onPress={handleSelectPdf}
+                            style={styles.selectButton}
+                        >
+                            Select PDF File
+                        </Button>
 
-                    {selectedFile && (
-                        <View style={styles.fileInfo}>
-                            <Card style={styles.fileCard} mode="outlined">
+                        {selectedFile && (
+                            <View style={styles.fileInfo}>
+                                <Card style={[styles.fileCard, { backgroundColor: theme.colors.surfaceVariant }]} mode="outlined">
+                                    <Card.Content>
+                                        <Text variant="labelLarge" style={styles.fileLabel}>
+                                            Selected File:
+                                        </Text>
+                                        <Text variant="bodyLarge" style={styles.fileName}>
+                                            📄 {selectedFile.name}
+                                        </Text>
+                                        <Text variant="bodyMedium" style={styles.fileSize}>
+                                            Size: {formatFileSize(selectedFile.size)}
+                                        </Text>
+                                    </Card.Content>
+                                </Card>
+
+                                <View style={{ marginBottom: 16 }}>
+                                    <Input
+                                        label="PDF Password"
+                                        value={password}
+                                        onChangeText={setPassword}
+                                        secureTextEntry
+                                    />
+                                </View>
+
+                                <Button
+                                    onPress={handleUpload}
+                                    loading={uploading}
+                                    disabled={uploading}
+                                    style={styles.uploadButton}
+                                >
+                                    {uploading ? 'Unlocking & Processing...' : 'Unlock & Upload'}
+                                </Button>
+                            </View>
+                        )}
+
+                        {uploadSuccess && (
+                            <Card style={styles.successCard} mode="outlined">
                                 <Card.Content>
-                                    <Text variant="labelLarge" style={styles.fileLabel}>
-                                        Selected File:
-                                    </Text>
-                                    <Text variant="bodyLarge" style={styles.fileName}>
-                                        📄 {selectedFile.name}
-                                    </Text>
-                                    <Text variant="bodyMedium" style={styles.fileSize}>
-                                        Size: {formatFileSize(selectedFile.size)}
+                                    <Text variant="bodyLarge" style={styles.successText}>
+                                        ✅ Processed successfully!
                                     </Text>
                                 </Card.Content>
                             </Card>
-
-                            <TextInput
-                                label="PDF Password"
-                                value={password}
-                                onChangeText={setPassword}
-                                mode="outlined"
-                                secureTextEntry
-                                style={{ marginBottom: 16, backgroundColor: 'white' }}
-                                placeholder="Enter document password"
-                            />
-
-                            <Button
-                                onPress={handleUpload}
-                                loading={uploading}
-                                disabled={uploading}
-                                style={styles.uploadButton}
-                            >
-                                {uploading ? 'Unlocking & Processing...' : 'Unlock & Upload'}
-                            </Button>
-                        </View>
-                    )}
-
-                    {uploadSuccess && (
-                        <Card style={styles.successCard} mode="outlined">
-                            <Card.Content>
-                                <Text variant="bodyLarge" style={styles.successText}>
-                                    ✅ Processed successfully!
-                                </Text>
-                            </Card.Content>
-                        </Card>
-                    )}
-                </Card.Content>
-            </Card>
-        </ScrollView>
+                        )}
+                    </Card.Content>
+                </Card>
+            </ScrollView>
+            <Snackbar
+                visible={snackbarVisible}
+                onDismiss={() => setSnackbarVisible(false)}
+                duration={3000}
+                style={{ backgroundColor: snackbarType === 'error' ? theme.colors.error : theme.colors.primary }}
+            >
+                {snackbarMessage}
+            </Snackbar>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
     },
     card: {
-        margin: 16,
+        marginBottom: 16,
         elevation: 4,
     },
     title: {
@@ -193,11 +209,9 @@ const styles = StyleSheet.create({
     },
     fileCard: {
         marginBottom: 16,
-        backgroundColor: '#f0f0f0',
     },
     fileLabel: {
         marginBottom: 8,
-        opacity: 0.7,
     },
     fileName: {
         marginBottom: 4,
@@ -211,7 +225,9 @@ const styles = StyleSheet.create({
     },
     successCard: {
         marginTop: 16,
-        backgroundColor: '#e8f5e9',
+        backgroundColor: '#e8f5e9', // Keep specifically green for success, or use theme success container if available
+        // Better to use theme colors if we had success tokens, but hardcoded green background for success card is okayish if light.
+        // Actually, let's use primaryContainer for "success-like" or surface with green text.
         borderColor: '#4caf50',
     },
     successText: {
