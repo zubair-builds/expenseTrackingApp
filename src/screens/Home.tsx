@@ -25,13 +25,20 @@ export const HomeScreen = ({ navigation }: any) => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: insets.top }]}>
-            <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-                <Card.Content>
-                    <Text variant="labelLarge" style={[styles.email, { color: theme.colors.onSurfaceVariant }]}>
-                        {user?.email}
-                    </Text>
+            <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} mode="elevated" elevation={2}>
+                <Card.Content style={styles.cardContent}>
+                    <View style={styles.headerSection}>
+                        <Text variant="headlineSmall" style={[styles.welcomeText, { color: theme.colors.onSurface }]}>
+                            Welcome back
+                        </Text>
+                        <Text variant="bodyMedium" style={[styles.email, { color: theme.colors.onSurfaceVariant }]}>
+                            {user?.email}
+                        </Text>
+                    </View>
 
-                    <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurfaceVariant }]}>
+                    <View style={[styles.divider, { backgroundColor: theme.colors.outlineVariant }]} />
+
+                    <Text variant="bodyLarge" style={[styles.description, { color: theme.colors.onSurface }]}>
                         Upload your bank statement (PDF) to automatically categorize and track your spending
                     </Text>
 
@@ -62,31 +69,43 @@ export const HomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: 20,
         justifyContent: 'center',
     },
     card: {
-        elevation: 4,
+        borderRadius: 16,
     },
-    title: {
-        textAlign: 'center',
+    cardContent: {
+        padding: 24,
+    },
+    headerSection: {
+        marginBottom: 20,
+    },
+    welcomeText: {
+        fontWeight: '700',
         marginBottom: 8,
+        letterSpacing: -0.3,
     },
     email: {
-        textAlign: 'center',
-        marginBottom: 16,
+        fontSize: 14,
+        opacity: 0.7,
+    },
+    divider: {
+        height: 1,
+        marginVertical: 24,
+        opacity: 0.2,
     },
     description: {
-        textAlign: 'center',
-        marginBottom: 24,
+        lineHeight: 22,
+        marginBottom: 32,
     },
     buttonContainer: {
         marginTop: 8,
     },
     uploadButton: {
-        marginVertical: 8,
+        marginBottom: 12,
     },
     signOutButton: {
-        marginVertical: 8,
+        marginTop: 4,
     },
 });

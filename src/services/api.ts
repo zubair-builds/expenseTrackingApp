@@ -16,6 +16,7 @@ export interface PdfItem {
     createdAt: string;
     newBalance?: number | null;
     statementDate?: string | null;
+    dueDate?: string | null;
     analysisTime?: number | null;
 }
 

@@ -4,9 +4,12 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "build:android": "export PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\" && export JAVA_HOME=\"/usr/local/opt/openjdk@17\" && cd android && ./gradlew assembleRelease",
+    "build:android:clean": "export PATH=\"/usr/local/opt/openjdk@17/bin:$PATH\" && export JAVA_HOME=\"/usr/local/opt/openjdk@17\" && cd android && ./gradlew clean assembleRelease",
+    "build:android:info": "ls -lh android/app/build/outputs/apk/release/app-release.apk 2>/dev/null || echo 'APK not found. Run npm run build:android first.'"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -16,6 +19,7 @@
     "@react-navigation/native-stack": "^7.9.0",
     "expo": "~54.0.30",
     "expo-document-picker": "^14.0.8",
+    "expo-font": "^14.0.10",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",

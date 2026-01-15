@@ -53,15 +53,17 @@ export function ListView<T>({
                 ) : undefined
             }
             ListEmptyComponent={
-                <View style={styles.emptyContainer}>
-                    <MaterialCommunityIcons
-                        name={emptyIcon}
-                        size={64}
-                        color={theme.colors.outline}
-                    />
+                <View style={[styles.emptyContainer, { paddingTop: 80 }]}>
+                    <View style={[styles.emptyIconContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
+                        <MaterialCommunityIcons
+                            name={emptyIcon}
+                            size={48}
+                            color={theme.colors.onSurfaceVariant}
+                        />
+                    </View>
                     <Text
                         variant="titleMedium"
-                        style={{ marginTop: 16, color: theme.colors.outline, textAlign: 'center' }}
+                        style={[styles.emptyText, { color: theme.colors.onSurfaceVariant, marginTop: 24 }]}
                     >
                         {emptyText}
                     </Text>
@@ -77,6 +79,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingVertical: 60,
     },
     listContent: {
         flexGrow: 1,
@@ -84,10 +87,22 @@ const styles = StyleSheet.create({
     },
     emptyListContent: {
         justifyContent: 'center',
+        minHeight: 400,
     },
     emptyContainer: {
         padding: 40,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    emptyIconContainer: {
+        width: 96,
+        height: 96,
+        borderRadius: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    emptyText: {
+        textAlign: 'center',
+        paddingHorizontal: 32,
     },
 });

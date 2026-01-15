@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
-import { Text, FAB, Dialog, Portal, TextInput, List, IconButton, useTheme, Snackbar, SegmentedButtons } from 'react-native-paper';
+import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { Text, FAB, Dialog, Portal, TextInput, List, IconButton, useTheme, Snackbar, Avatar, Button as PaperButton } from 'react-native-paper';
 import { Button } from '../components/Button';
 import { ListView } from '../components/ListView';
 import { useAuthStore } from '../store/authStore';
@@ -8,6 +8,7 @@ import { api } from '../services/api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeStore } from '../store/themeStore';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface PasswordItem {
     id: string;
@@ -21,25 +22,31 @@ export const SettingsScreen = () => {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
     const signOut = useAuthStore((state) => state.signOut);
-    const { themeMode, setThemeMode } = useThemeStore();
+    const user = useAuthStore((state) => state.user);
 
-    // State
+    // View State: 'profile' or 'security'
+    const [viewMode, setViewMode] = useState<'profile' | 'security'>('profile');
+
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            title: viewMode === 'profile' ? 'Profile' : 'Security',
+            headerLeft: viewMode === 'security' ? () => (
+                <IconButton icon="arrow-left" onPress={() => setViewMode('profile')} />
+            ) : undefined
+        });
+    }, [navigation, viewMode]);
+
+    // --- Password Manager Logic (Security View) ---
     const [passwords, setPasswords] = useState<PasswordItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [detailsDialogVisible, setDetailsDialogVisible] = useState(false);
-
-    // Form State
     const [label, setLabel] = useState('');
     const [passwordValue, setPasswordValue] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [saving, setSaving] = useState(false);
-
-    // Details State
     const [selectedPassword, setSelectedPassword] = useState<{ label: string, value: string } | null>(null);
     const [fetchingDetails, setFetchingDetails] = useState(false);
-
-    // Snackbar
     const [snackbarVisible, setSnackbarVisible] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -57,8 +64,10 @@ export const SettingsScreen = () => {
     };
 
     useEffect(() => {
-        fetchPasswords();
-    }, []);
+        if (viewMode === 'security') {
+            fetchPasswords();
+        }
+    }, [viewMode]);
 
     const handleCreatePassword = async () => {
         if (!label || !passwordValue) {
@@ -66,7 +75,6 @@ export const SettingsScreen = () => {
             setSnackbarVisible(true);
             return;
         }
-
         setSaving(true);
         try {
             const data = await api.createPassword(label, passwordValue);
@@ -76,7 +84,7 @@ export const SettingsScreen = () => {
                 setDialogVisible(false);
                 setLabel('');
                 setPasswordValue('');
-                fetchPasswords(); // Refresh list
+                fetchPasswords();
             }
         } catch (error: any) {
             setSnackbarMessage(error.message || 'Failed to save password');
@@ -98,7 +106,7 @@ export const SettingsScreen = () => {
                     onPress: async () => {
                         try {
                             await api.deletePassword(id);
-                            fetchPasswords(); // Refresh
+                            fetchPasswords();
                             setSnackbarMessage('Password deleted');
                             setSnackbarVisible(true);
                         } catch (error) {
@@ -129,54 +137,103 @@ export const SettingsScreen = () => {
         }
     };
 
-    const renderItem = ({ item }: { item: PasswordItem }) => (
+    const renderPasswordItem = ({ item }: { item: PasswordItem }) => (
         <List.Item
             title={item.label}
-            description={`Created: ${new Date(item.createdAt).toLocaleDateString()} `}
-            left={props => <List.Icon {...props} icon="lock" />}
+            titleStyle={styles.listItemTitle}
+            description={`Created: ${new Date(item.createdAt).toLocaleDateString()}`}
+            descriptionStyle={styles.listItemDescription}
+            left={props => (
+                <View style={[styles.iconContainer, { backgroundColor: theme.colors.primaryContainer }]}>
+                    <List.Icon {...props} icon="lock" color={theme.colors.primary} style={styles.listIcon} />
+                </View>
+            )}
             right={props => (
                 <IconButton
                     {...props}
                     icon="delete"
                     iconColor={theme.colors.error}
                     onPress={() => handleDeletePassword(item.id)}
+                    size={20}
                 />
             )}
             onPress={() => handleViewPassword(item.id, item.label)}
-            style={[styles.listItem, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outlineVariant }]}
+            style={[styles.listItem, { backgroundColor: theme.colors.surface }]}
         />
     );
 
-    React.useLayoutEffect(() => {
-        navigation.setOptions({ title: 'Settings' });
-    }, [navigation]);
 
+    // --- Profile View Render ---
+    if (viewMode === 'profile') {
+        const MenuItem = ({ icon, label, onPress, color = theme.colors.onSurface }: any) => (
+            <TouchableOpacity style={styles.menuItem} onPress={onPress}>
+                <View style={[styles.menuIconContainer, { backgroundColor: '#E8F5E9' }]}>
+                    <MaterialCommunityIcons name={icon} size={22} color="#2E7D32" />
+                </View>
+                <Text variant="bodyLarge" style={[styles.menuLabel, { color }]}>{label}</Text>
+                <MaterialCommunityIcons name="chevron-right" size={24} color={theme.colors.outline} />
+            </TouchableOpacity>
+        );
+
+        return (
+            <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+                {/* Profile Header */}
+                <View style={styles.profileHeader}>
+                    <View style={styles.avatarContainer}>
+                        <Avatar.Text
+                            size={72}
+                            label={user?.name ? user.name.substring(0, 2).toUpperCase() : 'U'}
+                            style={{ backgroundColor: theme.colors.primary }}
+                        />
+                        {/* Edit badge mockup */}
+                        <View style={[styles.editBadge, { backgroundColor: theme.colors.surface }]}>
+                            <MaterialCommunityIcons name="pencil" size={14} color={theme.colors.primary} />
+                        </View>
+                    </View>
+                    <View style={styles.userInfo}>
+                        <Text variant="titleLarge" style={styles.userName}>{user?.name || 'User Name'}</Text>
+                        <Text variant="bodyMedium" style={styles.userEmail}>{user?.email || 'email@example.com'}</Text>
+                    </View>
+                </View>
+
+                {/* Account Info Section */}
+                <View style={styles.section}>
+                    <Text variant="labelMedium" style={styles.sectionHeaderLabel}>Account Info</Text>
+                    <View style={[styles.menuCard, { backgroundColor: theme.colors.surface }]}>
+                        <MenuItem icon="map-marker" label="My Address" onPress={() => { }} />
+                        <MenuItem icon="credit-card" label="My Card" onPress={() => { }} />
+                        <MenuItem icon="history" label="Transaction History" onPress={() => { }} />
+                        <MenuItem icon="shield-check" label="Security" onPress={() => setViewMode('security')} />
+                    </View>
+                </View>
+
+                {/* Help & Support Section */}
+                <View style={styles.section}>
+                    <Text variant="labelMedium" style={styles.sectionHeaderLabel}>Help & Support</Text>
+                    <View style={[styles.menuCard, { backgroundColor: theme.colors.surface }]}>
+                        <MenuItem icon="help-circle" label="Help Center" onPress={() => { }} />
+                        <MenuItem icon="account-multiple-plus" label="Invite Friends" onPress={() => { }} />
+                        <MenuItem icon="shield-lock" label="Privacy Policy" onPress={() => { }} />
+                    </View>
+                </View>
+
+                <View style={{ flex: 1 }} />
+
+                <View style={styles.logoutContainer}>
+                    <Button mode="contained" onPress={signOut} style={{ backgroundColor: '#FFEBEE' }} textColor="#D32F2F">
+                        Logout
+                    </Button>
+                </View>
+            </View>
+        );
+    }
+
+    // --- Security View Render (Password Manager) ---
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            {(
-                <View style={{ padding: 16, backgroundColor: theme.colors.surfaceVariant }}>
-                    <Text variant="labelMedium" style={{ marginBottom: 8 }}>DEV: Theme Override</Text>
-                    <SegmentedButtons
-                        value={themeMode}
-                        onValueChange={setThemeMode as any}
-                        buttons={[
-                            { value: 'system', label: 'System' },
-                            { value: 'light', label: 'Light' },
-                            { value: 'dark', label: 'Dark' },
-                        ]}
-                    />
-                </View>
-            )}
-
-
-
-            <View style={[styles.sectionHeader, { backgroundColor: theme.colors.surfaceVariant }]}>
-                <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>Password Manager</Text>
-            </View>
-
             <ListView
                 data={passwords}
-                renderItem={renderItem}
+                renderItem={renderPasswordItem}
                 keyExtractor={item => item.id}
                 loading={loading}
                 emptyText="No passwords saved"
@@ -184,22 +241,12 @@ export const SettingsScreen = () => {
                 contentContainerStyle={styles.listContent}
             />
 
-            <View style={[styles.footer, { borderTopColor: theme.colors.outlineVariant }]}>
-                <Button
-                    mode="outlined"
-                    onPress={signOut}
-                    textColor={theme.colors.error}
-                    style={{ borderColor: theme.colors.error }}
-                >
-                    Sign Out
-                </Button>
-            </View>
-
             <FAB
                 icon="plus"
                 style={[styles.fab, { backgroundColor: theme.colors.primary }]}
                 color="white"
                 onPress={() => setDialogVisible(true)}
+                size="medium"
             />
 
             {/* Create Password Dialog */}
@@ -225,8 +272,8 @@ export const SettingsScreen = () => {
                         />
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setDialogVisible(false)}>Cancel</Button>
-                        <Button onPress={handleCreatePassword} loading={saving}>Save</Button>
+                        <PaperButton onPress={() => setDialogVisible(false)}>Cancel</PaperButton>
+                        <PaperButton onPress={handleCreatePassword} loading={saving}>Save</PaperButton>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
@@ -240,7 +287,7 @@ export const SettingsScreen = () => {
                         <Text variant="headlineSmall" selectable>{selectedPassword?.value}</Text>
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setDetailsDialogVisible(false)}>Close</Button>
+                        <PaperButton onPress={() => setDetailsDialogVisible(false)}>Close</PaperButton>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
@@ -260,32 +307,115 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    header: {
+    // Profile Styles
+    profileHeader: {
+        padding: 24,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    avatarContainer: {
+        position: 'relative',
+        marginRight: 20,
+    },
+    editBadge: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        padding: 4,
+        borderRadius: 12,
+        elevation: 2,
+    },
+    userInfo: {
+        flex: 1,
+    },
+    userName: {
+        fontWeight: 'bold',
+        fontSize: 20,
+    },
+    userEmail: {
+        opacity: 0.6,
+        fontSize: 14,
+    },
+    section: {
+        paddingHorizontal: 20,
+        marginBottom: 24,
+    },
+    sectionHeaderLabel: {
+        marginBottom: 12,
+        opacity: 0.7,
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    menuCard: {
+        borderRadius: 20,
+        overflow: 'hidden',
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 16,
         paddingHorizontal: 16,
-        paddingBottom: 8,
     },
-    sectionHeader: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+    menuIconContainer: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 16,
     },
-    appearanceContainer: {
-        // No extra styling needed as margin is on SegmentedButtons
+    menuLabel: {
+        flex: 1,
+        fontWeight: '500',
+        fontSize: 15,
     },
+    logoutContainer: {
+        padding: 24,
+        paddingBottom: 40,
+    },
+
+    // Existing/Security Styles
     listContent: {
-        paddingBottom: 80,
+        paddingBottom: 100,
+        paddingHorizontal: 4,
+        paddingTop: 8,
     },
     listItem: {
         borderBottomWidth: 1,
+        borderBottomColor: 'rgba(0,0,0,0.08)',
+        paddingVertical: 14,
+        marginHorizontal: 4,
+        borderRadius: 12,
+        marginBottom: 6,
+        paddingHorizontal: 4,
     },
-    footer: {
-        padding: 16,
-        borderTopWidth: 1,
+    listItemTitle: {
+        fontWeight: '600',
+        marginBottom: 6,
+        fontSize: 15,
+    },
+    listItemDescription: {
+        fontSize: 12,
+        opacity: 0.7,
+        marginTop: 2,
+    },
+    iconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+    listIcon: {
+        margin: 0,
     },
     fab: {
         position: 'absolute',
         margin: 16,
         right: 0,
-        bottom: 80, // Above footer/tabs
+        bottom: 40,
+        borderRadius: 16,
     },
     input: {
         marginBottom: 12,

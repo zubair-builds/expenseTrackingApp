@@ -33,19 +33,13 @@ export const StatementDetailsScreen = () => {
     }, [id]);
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'PKR',
-        }).format(amount);
+        return `Rs ${new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(amount)}`;
     };
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
+
 
     if (loading) {
         return (
@@ -71,78 +65,117 @@ export const StatementDetailsScreen = () => {
 
     const { summary, transactions } = statement;
 
-    const renderHeader = () => (
-        <View>
-            <Card style={[styles.summaryCard, { backgroundColor: theme.colors.surface }]} mode="elevated">
-                <Card.Content>
-                    <View style={styles.headerRow}>
-                        <View>
-                            <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>{summary.name}</Text>
-                            <Text variant="bodySmall" style={{ color: theme.colors.outline }}>Statement Date: {summary.statementDate}</Text>
-                        </View>
-                        <MaterialCommunityIcons name="bank" size={24} color={theme.colors.primary} />
+    const getCategoryIcon = (category: string) => {
+        const catLower = category.toLowerCase();
+        if (catLower.includes('grocery') || catLower.includes('supermarket') || catLower.includes('store')) return { icon: 'cart-outline', color: '#2E7D32', bg: '#E8F5E9' }; // Darker Green text
+        if (catLower.includes('food') || catLower.includes('dining') || catLower.includes('restaurant') || catLower.includes('burger') || catLower.includes('cafe')) return { icon: 'silverware-fork-knife', color: '#EF6C00', bg: '#FFF3E0' }; // Darker Orange
+        if (catLower.includes('tech') || catLower.includes('apple') || catLower.includes('electronics') || catLower.includes('software')) return { icon: 'laptop', color: '#1565C0', bg: '#E3F2FD' }; // Darker Blue
+        if (catLower.includes('entertainment') || catLower.includes('movie') || catLower.includes('netflix')) return { icon: 'movie-open-outline', color: '#7B1FA2', bg: '#F3E5F5' }; // Darker Purple
+        if (catLower.includes('transport') || catLower.includes('uber') || catLower.includes('fuel') || catLower.includes('gas')) return { icon: 'car-side', color: '#455A64', bg: '#ECEFF1' }; // Darker Slate
+        if (catLower.includes('health') || catLower.includes('pharmacy') || catLower.includes('doctor')) return { icon: 'medical-bag', color: '#C2185B', bg: '#FCE4EC' }; // Darker Pink
+        if (catLower.includes('payment') || catLower.includes('transfer')) return { icon: 'bank-transfer', color: '#283593', bg: '#E8EAF6' }; // Darker Indigo
+
+        return { icon: 'credit-card-outline', color: '#616161', bg: '#F5F5F5' };
+    };
+
+    const renderItem = ({ item: tx }: { item: Transaction }) => {
+        const { icon, color, bg } = getCategoryIcon(tx.category);
+        const isDebit = tx.type === 'DEBIT';
+
+        return (
+            <View style={[styles.transactionRow, { backgroundColor: theme.colors.surface }]}>
+                {/* Icon Container */}
+                <View style={[styles.iconBox, { backgroundColor: bg }]}>
+                    <MaterialCommunityIcons name={icon as any} size={24} color={color} />
+                </View>
+
+                {/* Main Content */}
+                <View style={styles.transactionContent}>
+                    <View style={styles.topRow}>
+                        <Text
+                            variant="titleMedium"
+                            style={[styles.merchantName, { color: theme.colors.onSurface }]}
+                            numberOfLines={1}
+                        >
+                            {tx.description}
+                        </Text>
+                        <Text
+                            variant="titleMedium"
+                            style={[
+                                styles.amountText,
+                                { color: isDebit ? theme.colors.error : '#4CAF50' } // Red for Debit, Green for Credit
+                            ]}
+                        >
+                            {formatCurrency(tx.amount)}
+                        </Text>
                     </View>
 
-                    <Divider style={styles.divider} />
+                    <View style={styles.bottomRow}>
+                        <Text variant="bodySmall" style={[styles.dateText, { color: theme.colors.onSurfaceVariant }]}>
+                            {tx.date}
+                        </Text>
 
-                    <View style={[styles.balanceContainer, { backgroundColor: theme.colors.elevation.level2, padding: 12, borderRadius: 8 }]}>
-                        <Text variant="labelMedium">New Balance</Text>
-                        <Text variant="headlineMedium" style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
+                        {/* Category Pill */}
+                        <View style={[styles.categoryPill, { backgroundColor: bg }]}>
+                            <Text variant="labelSmall" style={[styles.categoryText, { color: color }]}>
+                                {tx.category || 'Payment'}
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        );
+    };
+
+    const renderHeader = () => (
+        <View>
+            <Card style={[styles.summaryCard, { backgroundColor: theme.colors.surface }]} mode="elevated" elevation={2}>
+                <Card.Content style={styles.summaryCardContent}>
+                    <View style={styles.headerRow}>
+                        <View style={styles.headerTextContainer}>
+                            <Text variant="titleLarge" style={[styles.statementName, { color: theme.colors.onSurface }]}>{summary.name}</Text>
+                            <Text variant="bodySmall" style={[styles.statementDate, { color: theme.colors.onSurfaceVariant }]}>
+                                Statement Date: {summary.statementDate}
+                            </Text>
+                        </View>
+                        <View style={[styles.iconContainer, { backgroundColor: theme.colors.primaryContainer }]}>
+                            <MaterialCommunityIcons name="bank" size={24} color={theme.colors.primary} />
+                        </View>
+                    </View>
+
+                    <Divider style={[styles.divider, { backgroundColor: theme.colors.outlineVariant }]} />
+
+                    <View style={[styles.balanceContainer, { backgroundColor: theme.colors.primaryContainer, padding: 16, borderRadius: 12 }]}>
+                        <Text variant="labelMedium" style={[styles.balanceLabel, { color: theme.colors.onPrimaryContainer }]}>New Balance</Text>
+                        <Text variant="headlineMedium" style={[styles.balanceAmount, { color: theme.colors.onPrimaryContainer }]}>
                             {formatCurrency(summary.newBalance)}
                         </Text>
                     </View>
 
                     <View style={styles.statsRow}>
                         <View style={styles.statItem}>
-                            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>Due Date</Text>
-                            <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{summary.dueDate}</Text>
+                            <Text variant="labelSmall" style={[styles.statLabel, { color: theme.colors.onSurfaceVariant }]}>Due Date</Text>
+                            <Text variant="bodyMedium" style={[styles.statValue, { color: theme.colors.onSurface }]}>{summary.dueDate}</Text>
                         </View>
                         <View style={styles.statItem}>
-                            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>Min Payment</Text>
-                            <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{formatCurrency(summary.minimumPayment)}</Text>
+                            <Text variant="labelSmall" style={[styles.statLabel, { color: theme.colors.onSurfaceVariant }]}>Min Payment</Text>
+                            <Text variant="bodyMedium" style={[styles.statValue, { color: theme.colors.onSurface }]}>{formatCurrency(summary.minimumPayment)}</Text>
                         </View>
                         <View style={styles.statItem}>
-                            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>Credit Limit</Text>
-                            <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{formatCurrency(summary.creditLimit)}</Text>
+                            <Text variant="labelSmall" style={[styles.statLabel, { color: theme.colors.onSurfaceVariant }]}>Credit Limit</Text>
+                            <Text variant="bodyMedium" style={[styles.statValue, { color: theme.colors.onSurface }]}>{formatCurrency(summary.creditLimit)}</Text>
                         </View>
                     </View>
                 </Card.Content>
             </Card>
 
             <View style={styles.transactionsHeader}>
-                <Text variant="titleMedium" style={{ fontWeight: 'bold', color: theme.colors.onSurface }}>Transactions</Text>
-                <Text variant="labelMedium" style={{ color: theme.colors.primary }}>{transactions.length} items</Text>
+                <Text variant="titleMedium" style={[styles.transactionsTitle, { color: theme.colors.onSurface }]}>Transactions</Text>
+                <View style={[styles.countBadge, { backgroundColor: theme.colors.secondaryContainer }]}>
+                    <Text variant="labelSmall" style={{ color: theme.colors.onSecondaryContainer }}>{transactions.length}</Text>
+                </View>
             </View>
         </View>
-    );
-
-    const renderItem = ({ item: tx }: { item: Transaction }) => (
-        <List.Item
-            title={tx.description}
-            titleStyle={{ fontWeight: '500' }}
-            description={`${tx.category} • ${tx.date}`}
-            left={props => (
-                <List.Icon
-                    {...props}
-                    icon={tx.type === 'DEBIT' ? "arrow-up-bold" : "arrow-down-bold"}
-                    color={tx.type === 'DEBIT' ? theme.colors.error : theme.colors.primary}
-                />
-            )}
-            right={props => (
-                <View style={{ justifyContent: 'center', marginRight: 8 }}>
-                    <Text
-                        variant="titleMedium"
-                        style={{
-                            fontWeight: 'bold',
-                            color: tx.type === 'DEBIT' ? theme.colors.error : theme.colors.primary
-                        }}
-                    >
-                        {tx.type === 'DEBIT' ? '-' : '+'}{formatCurrency(tx.amount)}
-                    </Text>
-                </View>
-            )}
-            style={[styles.listItem, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outlineVariant }]}
-        />
     );
 
     return (
@@ -156,6 +189,7 @@ export const StatementDetailsScreen = () => {
                 emptyText="No transactions found"
                 emptyIcon="bank-transfer"
                 contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 16 }}
+                ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
             />
         </View>
     );
@@ -174,37 +208,150 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 40,
     },
     summaryCard: {
         marginBottom: 24,
+        borderRadius: 24, // More rounded as per modern UI
+        marginTop: 16,
+    },
+    summaryCardContent: {
+        padding: 24,
     },
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
+        marginBottom: 8,
+    },
+    headerTextContainer: {
+        flex: 1,
+        marginRight: 12,
+    },
+    statementName: {
+        fontWeight: '800',
+        marginBottom: 4,
+        letterSpacing: -0.5,
+        fontSize: 20,
+    },
+    statementDate: {
+        fontSize: 13,
+        opacity: 0.6,
+        fontWeight: '500',
+    },
+    iconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     divider: {
-        marginVertical: 16,
+        marginVertical: 24,
+        opacity: 0.1,
     },
     balanceContainer: {
-        marginBottom: 16,
+        marginBottom: 24,
+    },
+    balanceLabel: {
+        marginBottom: 8,
+        opacity: 0.8,
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    balanceAmount: {
+        fontWeight: '800',
+        letterSpacing: -1,
+        fontSize: 32,
     },
     statsRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        gap: 16,
     },
     statItem: {
         flex: 1,
+    },
+    statLabel: {
+        marginBottom: 6,
+        fontSize: 11,
+        fontWeight: '600',
+        opacity: 0.6,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    statValue: {
+        fontWeight: '700',
+        fontSize: 15,
     },
     transactionsHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 12,
-        paddingHorizontal: 0, // contentContainerStyle handles padding
-        marginTop: 16,
+        marginBottom: 16,
+        marginTop: 8,
     },
-    listItem: {
-        borderBottomWidth: 1,
+    transactionsTitle: {
+        fontWeight: '700',
+        fontSize: 18,
+    },
+    countBadge: {
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
+    },
+    // Transaction Row Styles
+    transactionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+        borderRadius: 20,
+    },
+    iconBox: {
+        width: 48,
+        height: 48,
+        borderRadius: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 16,
+    },
+    transactionContent: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    topRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
+    merchantName: {
+        fontWeight: '700',
+        fontSize: 16,
+        flex: 1,
+        marginRight: 8,
+    },
+    amountText: {
+        fontWeight: '700',
+        fontSize: 16,
+    },
+    bottomRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    dateText: {
+        opacity: 0.6,
+        fontWeight: '500',
+    },
+    categoryText: {
+        fontWeight: '600',
+        fontSize: 10,
+    },
+    categoryPill: {
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 6,
+        alignSelf: 'flex-start',
     },
 });

@@ -104,43 +104,50 @@ export const UploadPdfScreen = ({ navigation }: any) => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: insets.top }]}>
-            <ScrollView contentContainerStyle={{ padding: 16 }}>
-                <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-                    <Card.Content>
-                        <Text variant="bodyMedium" style={styles.description}>
-                            Select your credit card statement (PDF)
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} mode="elevated" elevation={2}>
+                    <Card.Content style={styles.cardContent}>
+                        <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
+                            Upload Statement
+                        </Text>
+                        <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurfaceVariant }]}>
+                            Select your credit card statement (PDF) to automatically extract and categorize transactions
                         </Text>
 
                         <Button
                             mode="outlined"
                             onPress={handleSelectPdf}
                             style={styles.selectButton}
+                            icon="file-document-outline"
                         >
                             Select PDF File
                         </Button>
 
                         {selectedFile && (
                             <View style={styles.fileInfo}>
-                                <Card style={[styles.fileCard, { backgroundColor: theme.colors.surfaceVariant }]} mode="outlined">
-                                    <Card.Content>
-                                        <Text variant="labelLarge" style={styles.fileLabel}>
-                                            Selected File:
+                                <Card style={[styles.fileCard, { backgroundColor: theme.colors.primaryContainer }]} mode="outlined">
+                                    <Card.Content style={styles.fileCardContent}>
+                                        <View style={styles.fileHeader}>
+                                            <Text variant="labelLarge" style={[styles.fileLabel, { color: theme.colors.onPrimaryContainer }]}>
+                                                Selected File
+                                            </Text>
+                                        </View>
+                                        <Text variant="bodyLarge" style={[styles.fileName, { color: theme.colors.onPrimaryContainer }]} numberOfLines={2}>
+                                            {selectedFile.name}
                                         </Text>
-                                        <Text variant="bodyLarge" style={styles.fileName}>
-                                            📄 {selectedFile.name}
-                                        </Text>
-                                        <Text variant="bodyMedium" style={styles.fileSize}>
-                                            Size: {formatFileSize(selectedFile.size)}
+                                        <Text variant="bodySmall" style={[styles.fileSize, { color: theme.colors.onPrimaryContainer }]}>
+                                            {formatFileSize(selectedFile.size)}
                                         </Text>
                                     </Card.Content>
                                 </Card>
 
-                                <View style={{ marginBottom: 16 }}>
+                                <View style={styles.passwordInput}>
                                     <Input
                                         label="PDF Password"
                                         value={password}
                                         onChangeText={setPassword}
                                         secureTextEntry
+                                        placeholder="Enter PDF password"
                                     />
                                 </View>
 
@@ -149,6 +156,8 @@ export const UploadPdfScreen = ({ navigation }: any) => {
                                     loading={uploading}
                                     disabled={uploading}
                                     style={styles.uploadButton}
+                                    mode="contained"
+                                    icon={uploading ? undefined : "upload"}
                                 >
                                     {uploading ? 'Processing...' : 'Process Statement'}
                                 </Button>
@@ -157,9 +166,9 @@ export const UploadPdfScreen = ({ navigation }: any) => {
 
                         {uploadSuccess && (
                             <Card style={[styles.successCard, { backgroundColor: theme.colors.primaryContainer }]} mode="outlined">
-                                <Card.Content>
+                                <Card.Content style={styles.successCardContent}>
                                     <Text variant="bodyLarge" style={[styles.successText, { color: theme.colors.onPrimaryContainer }]}>
-                                        Statement processed successfully!
+                                        ✓ Statement processed successfully!
                                     </Text>
                                 </Card.Content>
                             </Card>
@@ -183,51 +192,69 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    scrollContent: {
+        padding: 20,
+        paddingBottom: 40,
+    },
     card: {
-        marginBottom: 16,
-        elevation: 4,
+        borderRadius: 16,
+    },
+    cardContent: {
+        padding: 24,
     },
     title: {
-        textAlign: 'center',
-        marginBottom: 8,
-        fontWeight: 'bold',
+        fontWeight: '700',
+        marginBottom: 12,
+        letterSpacing: -0.3,
     },
     description: {
-        textAlign: 'center',
-        marginBottom: 24,
-        opacity: 0.7,
+        marginBottom: 32,
+        lineHeight: 22,
+        opacity: 0.8,
     },
     selectButton: {
         marginVertical: 8,
     },
     fileInfo: {
-        marginTop: 16,
+        marginTop: 24,
     },
     fileCard: {
-        marginBottom: 16,
+        marginBottom: 24,
+        borderRadius: 12,
+    },
+    fileCardContent: {
+        padding: 16,
+    },
+    fileHeader: {
+        marginBottom: 12,
     },
     fileLabel: {
-        marginBottom: 8,
+        fontWeight: '600',
+        opacity: 0.9,
     },
     fileName: {
-        marginBottom: 4,
-        fontWeight: '500',
+        marginBottom: 6,
+        fontWeight: '600',
     },
     fileSize: {
-        opacity: 0.6,
+        opacity: 0.8,
+        fontSize: 12,
+    },
+    passwordInput: {
+        marginBottom: 8,
     },
     uploadButton: {
         marginTop: 8,
     },
     successCard: {
-        marginTop: 16,
-        backgroundColor: '#e8f5e9', // Keep specifically green for success, or use theme success container if available
-        // Better to use theme colors if we had success tokens, but hardcoded green background for success card is okayish if light.
-        // Actually, let's use primaryContainer for "success-like" or surface with green text.
-        borderColor: '#4caf50',
+        marginTop: 24,
+        borderRadius: 12,
+    },
+    successCardContent: {
+        padding: 16,
     },
     successText: {
         textAlign: 'center',
-        fontWeight: 'bold',
+        fontWeight: '600',
     },
 });

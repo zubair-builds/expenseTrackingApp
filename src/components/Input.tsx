@@ -50,9 +50,9 @@ export const Input: React.FC<InputProps> = ({
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 4,
+        marginVertical: 8,
     },
     input: {
-        // backgroundColor: 'transparent', // Removed to follow MD3
+        fontSize: 16,
     },
 });

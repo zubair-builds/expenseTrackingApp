@@ -72,40 +72,44 @@ export const SignInScreen = ({ navigation }: any) => {
             style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-                <View style={[styles.headerContainer, { paddingTop: insets.top + 20 }]}>
-                    <Text variant="displaySmall" style={{ color: theme.colors.onSurface, fontWeight: '700', marginBottom: 8 }}>
+                <View style={[styles.headerContainer, { paddingTop: insets.top + 40 }]}>
+                    <Text variant="displaySmall" style={[styles.welcomeTitle, { color: theme.colors.onSurface }]}>
                         Welcome back
                     </Text>
-                    <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant }}>
+                    <Text variant="bodyLarge" style={[styles.welcomeSubtitle, { color: theme.colors.onSurfaceVariant }]}>
                         Securely sign in to your financial dashboard
                     </Text>
                 </View>
 
                 <View style={styles.formContainer}>
-                    <Input
-                        label="Email Address"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        error={!!errors.email}
-                        errorText={errors.email}
-                    />
+                    <View style={styles.inputGroup}>
+                        <Input
+                            label="Email Address"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            error={!!errors.email}
+                            errorText={errors.email}
+                        />
+                    </View>
 
-                    <Input
-                        label="Password"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={secureTextEntry}
-                        error={!!errors.password}
-                        errorText={errors.password}
-                        right={
-                            <TextInput.Icon
-                                icon={secureTextEntry ? "eye" : "eye-off"}
-                                onPress={() => setSecureTextEntry(!secureTextEntry)}
-                            />
-                        }
-                    />
+                    <View style={styles.inputGroup}>
+                        <Input
+                            label="Password"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry={secureTextEntry}
+                            error={!!errors.password}
+                            errorText={errors.password}
+                            right={
+                                <TextInput.Icon
+                                    icon={secureTextEntry ? "eye" : "eye-off"}
+                                    onPress={() => setSecureTextEntry(!secureTextEntry)}
+                                />
+                            }
+                        />
+                    </View>
 
                     <View style={styles.forgotPasswordContainer}>
                         <Button
@@ -128,13 +132,14 @@ export const SignInScreen = ({ navigation }: any) => {
                     </Button>
 
                     <View style={styles.footerContainer}>
-                        <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-                            Don't have an account?
+                        <Text variant="bodyMedium" style={[styles.footerText, { color: theme.colors.onSurfaceVariant }]}>
+                            Don't have an account?{' '}
                         </Text>
                         <Button
                             mode="text"
                             onPress={() => navigation.navigate('SignUp')}
                             compact
+                            style={styles.footerButton}
                         >
                             Create Account
                         </Button>
@@ -165,27 +170,49 @@ const styles = StyleSheet.create({
     headerContainer: {
         justifyContent: 'flex-end',
         paddingHorizontal: 24,
-        paddingBottom: 32,
+        paddingBottom: 40,
+    },
+    welcomeTitle: {
+        fontWeight: '700',
+        marginBottom: 12,
+        letterSpacing: -0.5,
+    },
+    welcomeSubtitle: {
+        lineHeight: 22,
+        opacity: 0.8,
     },
     formContainer: {
         paddingHorizontal: 24,
+        flex: 1,
+    },
+    inputGroup: {
+        marginBottom: 4,
     },
     forgotPasswordContainer: {
         alignItems: 'flex-end',
-        marginBottom: 24,
+        marginTop: 8,
+        marginBottom: 32,
     },
     forgotPasswordButton: {
         marginVertical: 0,
     },
     signInButton: {
         marginBottom: 24,
-        paddingVertical: 6,
+        marginTop: 8,
     },
     footerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 'auto',
-        marginBottom: 32,
+        marginBottom: 40,
+        flexWrap: 'wrap',
+    },
+    footerText: {
+        marginRight: 4,
+    },
+    footerButton: {
+        marginVertical: 0,
+        marginLeft: -8,
     },
 });
