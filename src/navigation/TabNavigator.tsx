@@ -15,7 +15,19 @@ export const TabNavigator = () => {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                headerShown: false,
+                headerShown: true,
+                headerStyle: {
+                    backgroundColor: theme.colors.surface,
+                    elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 1,
+                    borderBottomColor: theme.colors.surfaceVariant,
+                },
+                headerTitleStyle: {
+                    fontWeight: '600',
+                    fontSize: 20,
+                },
+                headerTintColor: theme.colors.onSurface,
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.outline,
                 tabBarStyle: {

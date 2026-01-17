@@ -1,17 +1,22 @@
-import React from 'react';
-import { PaperProvider, MD3LightTheme } from 'react-native-paper';
+import React, { useEffect } from 'react';
+import { PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useColorScheme } from 'react-native';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { StatusBar } from 'expo-status-bar';
 
-// Material Design 3 Theme
-const theme = {
+import { useAuthStore } from './src/store/authStore';
+import { useThemeStore } from './src/store/themeStore';
+
+// Material Design 3 Light Theme
+const lightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: '#0047AB', // Deep Cobalt Blue
+    primary: '#52A8A6', // Brand Teal
     onPrimary: '#FFFFFF',
-    primaryContainer: '#D6E4FF',
-    onPrimaryContainer: '#001B3D',
+    primaryContainer: '#E0F2F1', // Light Teal/Mint
+    onPrimaryContainer: '#004D40',
     secondary: '#006D77', // Teal
     onSecondary: '#FFFFFF',
     tertiary: '#6A5ACD', // Slate Blue
@@ -21,13 +26,50 @@ const theme = {
     surfaceVariant: '#E0E2EC',
     onSurface: '#191C1E',
   },
-  roundness: 12, // More modern rounded corners
+  roundness: 12,
+};
+
+// Material Design 3 Dark Theme
+const darkTheme = {
+  ...MD3DarkTheme,
+  colors: {
+    ...MD3DarkTheme.colors,
+    primary: '#52A8A6', // Brand Teal
+    onPrimary: '#00363D', // Darker text on teal
+    primaryContainer: '#004D40', // Dark Teal
+    onPrimaryContainer: '#E0F2F1',
+    secondary: '#4DD0E1', // Light Teal
+    onSecondary: '#00363D',
+    tertiary: '#D0BCFF', // Light Slate Blue
+    error: '#FFB4AB',
+    background: '#1A1C1E', // Dark Grey
+    surface: '#1A1C1E',
+    surfaceVariant: '#43474E',
+    onSurface: '#E2E2E6',
+  },
+  roundness: 12,
 };
 
 export default function App() {
+  const scheme = useColorScheme();
+  const themeMode = useThemeStore((state) => state.themeMode);
+
+  // Determine active theme
+  let isDark = scheme === 'dark';
+  if (themeMode === 'light') isDark = false;
+  if (themeMode === 'dark') isDark = true;
+
+  const theme = isDark ? darkTheme : lightTheme;
+
+  useEffect(() => {
+    // Load auth token on app startup
+    useAuthStore.getState().loadToken();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <RootNavigator />
       </PaperProvider>
     </SafeAreaProvider>

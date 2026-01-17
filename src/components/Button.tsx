@@ -42,8 +42,11 @@ export const Button: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
     button: {
         marginVertical: 8,
+        borderRadius: 12,
+        elevation: 0, // Use shadow for better control
     },
     buttonContent: {
-        paddingVertical: 6,
+        paddingVertical: 8,
+        paddingHorizontal: 4,
     },
 });

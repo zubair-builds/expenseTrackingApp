@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { Text, Card, Snackbar } from 'react-native-paper';
+import { Text, Card, Snackbar, useTheme, TextInput } from 'react-native-paper';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const SignInScreen = ({ navigation }: any) => {
+    const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [secureTextEntry, setSecureTextEntry] = useState(true);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({ email: '', password: '' });
 
@@ -65,77 +69,90 @@ export const SignInScreen = ({ navigation }: any) => {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
+            style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
-            <View style={styles.headerContainer}>
-                <Text variant="displaySmall" style={styles.headerTitle}>
-                    Welcome back
-                </Text>
-                <Text variant="bodyLarge" style={styles.headerSubtitle}>
-                    Securely sign in to your financial dashboard
-                </Text>
-            </View>
-
-            <View style={styles.formContainer}>
-                <Input
-                    label="Email Address"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    error={!!errors.email}
-                    errorText={errors.email}
-                />
-
-                <Input
-                    label="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={true}
-                    error={!!errors.password}
-                    errorText={errors.password}
-                />
-
-                <View style={styles.forgotPasswordContainer}>
-                    <Button
-                        mode="text"
-                        onPress={() => { }}
-                        compact
-                        style={styles.forgotPasswordButton}
-                    >
-                        Forgot Password?
-                    </Button>
-                </View>
-
-                <Button
-                    onPress={handleSignIn}
-                    loading={loading}
-                    style={styles.signInButton}
-                    mode="contained"
-                >
-                    Log In
-                </Button>
-
-                <View style={styles.footerContainer}>
-                    <Text variant="bodyMedium" style={{ color: '#444' }}>
-                        Don't have an account?
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+                <View style={[styles.headerContainer, { paddingTop: insets.top + 40 }]}>
+                    <Text variant="displaySmall" style={[styles.welcomeTitle, { color: theme.colors.onSurface }]}>
+                        Welcome back
                     </Text>
-                    <Button
-                        mode="text"
-                        onPress={() => navigation.navigate('SignUp')}
-                        compact
-                    >
-                        Create Account
-                    </Button>
+                    <Text variant="bodyLarge" style={[styles.welcomeSubtitle, { color: theme.colors.onSurfaceVariant }]}>
+                        Securely sign in to your financial dashboard
+                    </Text>
                 </View>
-            </View>
+
+                <View style={styles.formContainer}>
+                    <View style={styles.inputGroup}>
+                        <Input
+                            label="Email Address"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            error={!!errors.email}
+                            errorText={errors.email}
+                        />
+                    </View>
+
+                    <View style={styles.inputGroup}>
+                        <Input
+                            label="Password"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry={secureTextEntry}
+                            error={!!errors.password}
+                            errorText={errors.password}
+                            right={
+                                <TextInput.Icon
+                                    icon={secureTextEntry ? "eye" : "eye-off"}
+                                    onPress={() => setSecureTextEntry(!secureTextEntry)}
+                                />
+                            }
+                        />
+                    </View>
+
+                    <View style={styles.forgotPasswordContainer}>
+                        <Button
+                            mode="text"
+                            onPress={() => { }}
+                            compact
+                            style={styles.forgotPasswordButton}
+                        >
+                            Forgot Password?
+                        </Button>
+                    </View>
+
+                    <Button
+                        onPress={handleSignIn}
+                        loading={loading}
+                        style={styles.signInButton}
+                        mode="contained"
+                    >
+                        Log In
+                    </Button>
+
+                    <View style={styles.footerContainer}>
+                        <Text variant="bodyMedium" style={[styles.footerText, { color: theme.colors.onSurfaceVariant }]}>
+                            Don't have an account?{' '}
+                        </Text>
+                        <Button
+                            mode="text"
+                            onPress={() => navigation.navigate('SignUp')}
+                            compact
+                            style={styles.footerButton}
+                        >
+                            Create Account
+                        </Button>
+                    </View>
+                </View>
+            </ScrollView>
 
             <Snackbar
                 visible={snackbarVisible}
                 onDismiss={() => setSnackbarVisible(false)}
                 duration={3000}
                 style={{
-                    backgroundColor: snackbarType === 'error' ? '#BA1A1A' : '#006D77',
+                    backgroundColor: snackbarType === 'error' ? theme.colors.error : theme.colors.primary,
                     marginBottom: 20,
                     borderRadius: 8,
                 }}
@@ -149,44 +166,53 @@ export const SignInScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
     },
     headerContainer: {
-        flex: 0.35,
         justifyContent: 'flex-end',
         paddingHorizontal: 24,
-        paddingBottom: 32,
+        paddingBottom: 40,
     },
-    headerTitle: {
-        color: '#0047AB',
+    welcomeTitle: {
         fontWeight: '700',
-        marginBottom: 8,
+        marginBottom: 12,
+        letterSpacing: -0.5,
     },
-    headerSubtitle: {
-        color: '#555',
+    welcomeSubtitle: {
+        lineHeight: 22,
+        opacity: 0.8,
     },
     formContainer: {
-        flex: 0.65,
         paddingHorizontal: 24,
+        flex: 1,
+    },
+    inputGroup: {
+        marginBottom: 4,
     },
     forgotPasswordContainer: {
         alignItems: 'flex-end',
-        marginBottom: 24,
+        marginTop: 8,
+        marginBottom: 32,
     },
     forgotPasswordButton: {
         marginVertical: 0,
     },
     signInButton: {
         marginBottom: 24,
-        paddingVertical: 6,
-        borderRadius: 50, // Pill shape for primary actions
+        marginTop: 8,
     },
     footerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 'auto',
-        marginBottom: 32,
+        marginBottom: 40,
+        flexWrap: 'wrap',
     },
-    // Remnants of old styles removed
+    footerText: {
+        marginRight: 4,
+    },
+    footerButton: {
+        marginVertical: 0,
+        marginLeft: -8,
+    },
 });

@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, Card } from 'react-native-paper';
+import { Text, Card, useTheme } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/Button';
 
 export const HomeScreen = ({ navigation }: any) => {
+    const theme = useTheme();
+    const insets = useSafeAreaInsets();
     const user = useAuthStore((state) => state.user);
     const signOut = useAuthStore((state) => state.signOut);
 
@@ -16,34 +19,47 @@ export const HomeScreen = ({ navigation }: any) => {
         signOut();
     };
 
+    React.useLayoutEffect(() => {
+        navigation.setOptions({ title: 'Track Expenses' });
+    }, [navigation]);
+
     return (
-        <View style={styles.container}>
-            <Card style={styles.card}>
-                <Card.Content>
-                    <Text variant="headlineMedium" style={styles.title}>
-                        Welcome! 👋
-                    </Text>
-                    <Text variant="bodyLarge" style={styles.email}>
-                        {user?.email}
-                    </Text>
-                    <Text variant="bodyMedium" style={styles.description}>
-                        Upload your credit card statement to track your expenses
+        <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: insets.top }]}>
+            <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} mode="elevated" elevation={2}>
+                <Card.Content style={styles.cardContent}>
+                    <View style={styles.headerSection}>
+                        <Text variant="headlineSmall" style={[styles.welcomeText, { color: theme.colors.onSurface }]}>
+                            Welcome back
+                        </Text>
+                        <Text variant="bodyMedium" style={[styles.email, { color: theme.colors.onSurfaceVariant }]}>
+                            {user?.email}
+                        </Text>
+                    </View>
+
+                    <View style={[styles.divider, { backgroundColor: theme.colors.outlineVariant }]} />
+
+                    <Text variant="bodyLarge" style={[styles.description, { color: theme.colors.onSurface }]}>
+                        Upload your bank statement (PDF) to automatically categorize and track your spending
                     </Text>
 
-                    <Button
-                        onPress={handleUploadPress}
-                        style={styles.uploadButton}
-                    >
-                        Upload Credit Card Statement (PDF)
-                    </Button>
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            mode="contained"
+                            onPress={handleUploadPress}
+                            style={styles.uploadButton}
+                        >
+                            Upload Credit Card Statement (PDF)
+                        </Button>
 
-                    <Button
-                        mode="outlined"
-                        onPress={handleSignOut}
-                        style={styles.signOutButton}
-                    >
-                        Sign Out
-                    </Button>
+                        <Button
+                            mode="outlined"
+                            onPress={handleSignOut}
+                            textColor={theme.colors.error}
+                            style={[styles.signOutButton, { borderColor: theme.colors.error }]}
+                        >
+                            Sign Out
+                        </Button>
+                    </View>
                 </Card.Content>
             </Card>
         </View>
@@ -53,32 +69,43 @@ export const HomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
-        padding: 16,
+        padding: 20,
         justifyContent: 'center',
     },
     card: {
-        elevation: 4,
+        borderRadius: 16,
     },
-    title: {
-        textAlign: 'center',
+    cardContent: {
+        padding: 24,
+    },
+    headerSection: {
+        marginBottom: 20,
+    },
+    welcomeText: {
+        fontWeight: '700',
         marginBottom: 8,
-        fontWeight: 'bold',
+        letterSpacing: -0.3,
     },
     email: {
-        textAlign: 'center',
-        marginBottom: 16,
-        color: '#6200ee',
-    },
-    description: {
-        textAlign: 'center',
-        marginBottom: 24,
+        fontSize: 14,
         opacity: 0.7,
     },
-    uploadButton: {
+    divider: {
+        height: 1,
+        marginVertical: 24,
+        opacity: 0.2,
+    },
+    description: {
+        lineHeight: 22,
+        marginBottom: 32,
+    },
+    buttonContainer: {
         marginTop: 8,
     },
+    uploadButton: {
+        marginBottom: 12,
+    },
     signOutButton: {
-        marginTop: 8,
+        marginTop: 4,
     },
 });

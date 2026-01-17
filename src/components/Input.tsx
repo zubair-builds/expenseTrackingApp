@@ -11,6 +11,7 @@ interface InputProps {
     errorText?: string;
     autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
     keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+    right?: React.ReactNode;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -22,6 +23,7 @@ export const Input: React.FC<InputProps> = ({
     errorText = '',
     autoCapitalize = 'none',
     keyboardType = 'default',
+    right,
 }) => {
     return (
         <View style={styles.container}>
@@ -35,6 +37,7 @@ export const Input: React.FC<InputProps> = ({
                 autoCapitalize={autoCapitalize}
                 keyboardType={keyboardType}
                 style={styles.input}
+                right={right}
             />
             {error && errorText ? (
                 <HelperText type="error" visible={true}>
@@ -47,9 +50,9 @@ export const Input: React.FC<InputProps> = ({
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 4,
+        marginVertical: 8,
     },
     input: {
-        backgroundColor: 'transparent',
+        fontSize: 16,
     },
 });
